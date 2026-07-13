@@ -1,36 +1,56 @@
 // ==========================================
-// 1. FUNGSI FOTO MEMBESAR (LIGHTBOX) & PERSIAPAN KETIKAN
+// 1. FUNGSI FOTO MEMBESAR (LIGHTBOX) & PEMUTAR MUSIK
 // ==========================================
 document.addEventListener("DOMContentLoaded", function() {
-    const daftarFoto = document.querySelectorAll('.gallery-scroll img, .polaroid');
+    const daftarFoto = document.querySelectorAll('.gallery-scroll img, .polaroid, .planet-card');
     const modal = document.getElementById('image-modal');
     const modalImg = document.getElementById('modal-img');
+    const modalIframe = document.getElementById('modal-iframe'); // Panggil elemen iframe
+    const modalCaption = document.getElementById('modal-caption');
 
     if (daftarFoto.length > 0 && modal && modalImg) {
         daftarFoto.forEach(foto => {
             foto.addEventListener('click', function() {
-                // Cek apakah yang diklik itu Polaroid (Slide 5)
-                if(this.classList.contains('polaroid')) {
-                    modalImg.src = this.querySelector('img').src;
+                
+                // Reset layar setiap kali diklik
+                if(modalCaption) modalCaption.innerText = "";
+                modalImg.style.display = 'block'; // Tampilkan foto sebagai default
+                modalIframe.style.display = 'none'; // Sembunyikan musik sebagai default
+                modalIframe.src = ""; // Kosongkan lagu sebelumnya
+
+                // A. JIKA YANG DIKLIK ADALAH KARTU LAGU (Punya data-embed)
+                if(this.classList.contains('planet-card') && this.hasAttribute('data-embed')) {
+                    modalImg.style.display = 'none'; // Sembunyikan foto
+                    modalIframe.style.display = 'block'; // Tampilkan alat musik
+                    modalIframe.src = this.getAttribute('data-embed'); // Masukkan link Spotify
                     
-                    // Paksa layar membesar jadi Kotak (1:1)
-                    modalImg.style.aspectRatio = "1 / 1";
-                    modalImg.style.objectFit = "cover";
+                    const teksCaption = this.querySelector('.planet-caption').innerText;
+                    if(modalCaption) modalCaption.innerText = teksCaption;
                 } 
-                // Jika bukan Polaroid, berarti itu Galeri Cinta (Slide 4)
+                // B. JIKA YANG DIKLIK ADALAH KARTU 3D BIASA (Bukan Lagu)
+                else if(this.classList.contains('planet-card')) {
+                    modalImg.src = this.querySelector('img').src;
+                    modalImg.style.aspectRatio = "3 / 4"; 
+                    
+                    const teksCaption = this.querySelector('.planet-caption').innerText;
+                    if(modalCaption) modalCaption.innerText = teksCaption;
+                } 
+                // C. JIKA YANG DIKLIK ADALAH POLAROID
+                else if(this.classList.contains('polaroid')) {
+                    modalImg.src = this.querySelector('img').src;
+                    modalImg.style.aspectRatio = "1 / 1"; 
+                } 
+                // D. JIKA YANG DIKLIK ADALAH GALERI CINTA
                 else {
                     modalImg.src = this.src;
-                    
-                    // Paksa layar membesar jadi Potret (9:16)
-                    modalImg.style.aspectRatio = "9 / 16";
-                    modalImg.style.objectFit = "cover";
+                    modalImg.style.aspectRatio = "9 / 16"; 
                 }
+                
                 modal.classList.add('show-modal');
             });
         });
     }
 
-    // Sembunyikan Teks Sejak Awal untuk Efek Ketikan
     const semuaTeksKetikan = document.querySelectorAll('.typing-text');
     semuaTeksKetikan.forEach(el => {
         el.setAttribute('data-teks', el.innerHTML); 
@@ -38,21 +58,52 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
+// Fungsi Menutup Layar & Mematikan Lagu
 function tutupModal() {
     const modal = document.getElementById('image-modal');
+    const modalIframe = document.getElementById('modal-iframe');
+    
     if (modal) {
         modal.classList.remove('show-modal');
+        // KUNCI PENTING: Mengosongkan src agar lagu berhenti berputar saat ditutup
+        if (modalIframe) {
+            modalIframe.src = ""; 
+        }
     }
 }
 
 // ==========================================
-// 2. FUNGSI KADO (HALAMAN AWAL)
+// 2. FUNGSI KADO & PEMUTAR MUSIK LATAR
 // ==========================================
 function bukaKado() {
     buatHujanBunga();
     
     const flash = document.getElementById('flash-light');
     if (flash) flash.classList.add('flash-active');
+
+    // --- MULAI MUSIK & MUNCULKAN POP-UP ---
+    const bgMusic = document.getElementById('bg-music');
+    const musicPopup = document.getElementById('music-popup');
+    
+    // Putar musiknya
+    if(bgMusic) {
+        bgMusic.play().catch(error => {
+            console.log("Browser memblokir autoplay, tidak masalah.");
+        });
+    }
+
+    // Munculkan notifikasi pop-up dari samping
+    if(musicPopup) {
+        setTimeout(() => {
+            musicPopup.classList.add('show-music');
+            
+            // Sembunyikan kembali pop-up setelah 6 detik agar layar kembali lega
+            setTimeout(() => {
+                musicPopup.classList.remove('show-music');
+            }, 6000);
+        }, 1000); // Muncul 1 detik setelah layar putih berkedip
+    }
+    // --------------------------------------
 
     setTimeout(() => {
         const landingPage = document.getElementById('landing-page');

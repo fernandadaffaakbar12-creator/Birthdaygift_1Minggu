@@ -233,31 +233,182 @@ body {
 }
 
 /* =========================================
-   TIMELINE (Slide 3)
+   KAROUSEL 3D (Slide 3 - Tentangmu)
 ========================================= */
-.timeline {
-    border-left: 2px solid #ffb6c1;
-    padding-left: 20px;
-    margin: 20px auto;
-    text-align: left;
-}
-
-.timeline-item {
-    margin-bottom: 25px;
+.solar-system {
     position: relative;
+    width: 100%;
+    height: 550px; /* Ditinggikan agar muat kartu yang membesar */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1500px; /* Diperbesar agar efek 3D tetap proporsional */
+    overflow: hidden;
+    margin-top: 20px;
 }
 
-.timeline-item::before {
-    content: '';
+/* Lintasan Orbit yang Berputar */
+.orbit-track {
     position: absolute;
-    left: -26px;
-    top: 5px;
-    width: 10px;
-    height: 10px;
-    background: #ffb6c1;
-    border-radius: 50%;
+    width: 220px; /* Lebar foto DIPERBESAR (sebelumnya 180px) */
+    height: 330px; /* Tinggi foto DIPERBESAR (sebelumnya 270px) */
+    transform-style: preserve-3d;
+    animation: spin-orbit 25s linear infinite;
+    z-index: 1;
 }
 
+.orbit-track:hover {
+    animation-play-state: paused;
+}
+
+@keyframes spin-orbit {
+    0% { transform: rotateY(0deg); }
+    100% { transform: rotateY(-360deg); } 
+}
+
+/* Desain Bingkai Foto (Planet) */
+.planet-card {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+    transition: border-color 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+}
+
+.planet-card:hover {
+    border-color: #ffb6c1;
+    box-shadow: 0 0 25px #ffb6c1;
+}
+
+.planet-card img {
+    width: 100%;
+    aspect-ratio: 3 / 4; 
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    border: 2px solid rgba(255,255,255,0.5);
+}
+
+.planet-caption {
+    font-size: 1.1rem; /* Ukuran tulisan sedikit diperbesar */
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.2;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+}
+
+/* Jarak Orbit DIPERBESAR (TranslateZ) agar kartu tidak berdempetan */
+.item1 { transform: rotateY(0deg) translateZ(340px); }
+.item2 { transform: rotateY(72deg) translateZ(340px); }
+.item3 { transform: rotateY(144deg) translateZ(340px); }
+.item4 { transform: rotateY(216deg) translateZ(340px); }
+.item5 { transform: rotateY(288deg) translateZ(340px); }
+
+/* =========================================
+   DESAIN LAYAR FOTO MEMBESAR (LIGHTBOX)
+========================================= */
+#image-modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column; /* Mengubah susunan jadi atas-bawah */
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+
+#image-modal.show-modal {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#modal-img {
+    /* Desain khusus untuk pemutar musik Spotify/YouTube */
+#modal-iframe {
+    display: none; /* Disembunyikan dari awal */
+    width: 90vw;
+    max-width: 350px; /* Lebar pas untuk Spotify */
+    height: 352px; /* Tinggi standar Spotify embed */
+    border-radius: 15px;
+    box-shadow: 0 10px 50px rgba(255, 182, 193, 0.5);
+    transform: scale(0.7);
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+#image-modal.show-modal #modal-iframe {
+    transform: scale(1);
+}
+
+    max-width: 90vw;
+    max-height: 75vh; /* Sedikit dikecilkan agar ada ruang untuk teks */
+    border-radius: 15px;
+    box-shadow: 0 10px 50px rgba(255, 182, 193, 0.5);
+    transform: scale(0.7);
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Desain teks caption di layar membesar */
+#modal-caption {
+    margin-top: 20px;
+    font-size: 2.5rem;
+    text-shadow: 0 4px 10px rgba(0,0,0,0.8);
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    transition-delay: 0.2s; /* Teks muncul sedikit belakangan agar dramatis */
+}
+
+#image-modal.show-modal #modal-img {
+    transform: scale(1);
+}
+
+#image-modal.show-modal #modal-caption {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* =========================================
+   PENYESUAIAN MOBILE UNTUK KAROUSEL 3D
+========================================= */
+@media (max-width: 600px) {
+    .solar-system {
+        height: 380px; 
+    }
+    
+    .orbit-track {
+        width: 140px;
+        height: 220px;
+    }
+    
+    .planet-caption {
+        font-size: 0.85rem;
+    }
+
+    /* Merapatkan jarak orbit di HP */
+    .item1 { transform: rotateY(0deg) translateZ(160px); }
+    .item2 { transform: rotateY(72deg) translateZ(160px); }
+    .item3 { transform: rotateY(144deg) translateZ(160px); }
+    .item4 { transform: rotateY(216deg) translateZ(160px); }
+    .item5 { transform: rotateY(288deg) translateZ(160px); }
+}
 /* =========================================
    PANEL KHUSUS SLIDE FOTO (Tanpa Kaca)
 ========================================= */
@@ -432,9 +583,98 @@ body {
 }
 
 /* =========================================
+   POP-UP NOTIFIKASI MUSIK (NOW PLAYING)
+========================================= */
+.music-popup {
+    position: fixed;
+    top: 30px;
+    right: -100%; /* Disembunyikan jauh di luar layar kanan */
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: 10px 20px 10px 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    z-index: 9999;
+    /* Animasi masuk dan keluar yang super mulus */
+    transition: right 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Saat class ini ditambahkan oleh JS, pop-up meluncur masuk */
+.music-popup.show-music {
+    right: 20px; 
+}
+
+/* Desain foto album menjadi piringan hitam yang berputar */
+.album-cover {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ffb6c1;
+    animation: spin-record 4s linear infinite;
+    box-shadow: 0 0 10px rgba(255, 182, 193, 0.5);
+}
+
+@keyframes spin-record {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.music-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.now-playing {
+    font-size: 0.75rem;
+    color: #ffb6c1;
+    margin: 0 0 3px 0;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.song-title {
+    font-size: 1rem;
+    color: #ffffff;
+    margin: 0;
+    font-weight: 500;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+
+/* =========================================
    PENYESUAIAN MOBILE (Tampilan Layar HP)
 ========================================= */
 @media (max-width: 600px) {
+
+   /* =========================================
+       PENYESUAIAN MOBILE UNTUK KAROUSEL 3D
+    ========================================= */
+    .solar-system {
+        height: 450px; 
+    }
+    
+    .orbit-track {
+        width: 180px; /* Ukuran HP juga ikut diperbesar */
+        height: 270px;
+    }
+    
+    .planet-caption {
+        font-size: 0.95rem;
+    }
+
+    /* Menyesuaikan jarak orbit di HP */
+    .item1 { transform: rotateY(0deg) translateZ(200px); }
+    .item2 { transform: rotateY(72deg) translateZ(200px); }
+    .item3 { transform: rotateY(144deg) translateZ(200px); }
+    .item4 { transform: rotateY(216deg) translateZ(200px); }
+    .item5 { transform: rotateY(288deg) translateZ(200px); }
+
     #main-content {
         padding: 30px 15px;
     }
@@ -468,6 +708,7 @@ body {
     .polaroid .caption {
         font-size: 1.1rem; /* Ukuran tulisan di bawah foto dikecilkan agar muat dan rapi */
     }
+
     /* =========================================
    EFEK MESIN TIK (TYPEWRITER)
 ========================================= */
@@ -485,4 +726,19 @@ body {
     0%, 100% { opacity: 1; }
     50% { opacity: 0; }
 }
+
+.music-popup {
+        top: 20px;
+        padding: 8px 15px 8px 8px;
+        gap: 10px;
+    }
+    .music-popup.show-music {
+        right: 15px; 
+    }
+    .album-cover {
+        width: 40px; height: 40px;
+    }
+    .song-title {
+        font-size: 0.9rem;
+    }
 }
