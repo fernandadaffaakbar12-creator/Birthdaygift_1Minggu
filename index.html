@@ -1,23 +1,41 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Happy Birthday Cintaku!</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Outfit:wght@300;400;600&display=swap"
+        rel="stylesheet">
 </head>
+
 <body>
     <audio id="bg-music" loop>
         <source src="audio/About-You.mp3" type="audio/mpeg">
     </audio>
 
     <div id="music-popup" class="music-popup">
+        <button class="hide-popup-btn" onclick="hideMusicPopup()">✖</button>
+        <p class="now-playing-top">Now Playing</p>
         <img src="https://picsum.photos/100/100?random=20" alt="Album Cover" class="album-cover">
         <div class="music-info">
-            <p class="now-playing">Now Playing ✨</p>
-            <p class="song-title">Judul Lagumu</p> </div>
+            <p class="song-title">About You</p>
+            <p class="artist-name">The 1975</p>
+        </div>
+        <button id="play-pause-btn" class="play-pause-btn" onclick="toggleMusic()">
+            <!-- SVG Pause Icon -->
+            <svg id="icon-pause" width="24" height="24" viewBox="0 0 24 24" fill="white">
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+            </svg>
+            <svg id="icon-play" width="24" height="24" viewBox="0 0 24 24" fill="white" style="display: none;">
+                <path d="M8 5v14l11-7z" />
+            </svg>
+        </button>
     </div>
+
+    <!-- Tombol untuk memunculkan kembali pop up musik -->
+    <button id="show-music-btn" class="show-music-btn" onclick="showMusicPopup()">🎵</button>
 
     <div class="stars"></div>
 
@@ -35,51 +53,64 @@
     </div>
 
     <div id="main-content" class="hidden">
-        
+
         <section class="slide glass-panel show-on-scroll">
             <h1 class="aesthetic-font">Happy Birthday,<br>[Nama Pacarmu]!</h1>
-            <p class="typing-text">Hari ini adalah hari yang paling spesial karena di hari ini, semesta membawa kamu ke dunia.</p>
-            <p class="typing-text">Selamat bertambah usia. Terima kasih karena sudah lahir dan tumbuh menjadi pribadi sebaik, sehangat, dan sekuat dirimu sekarang.</p>
+            <p class="typing-text">Hari ini adalah hari yang paling spesial karena di hari ini, semesta membawa kamu ke
+                dunia.</p>
+            <p class="typing-text">Selamat bertambah usia. Terima kasih karena sudah lahir dan tumbuh menjadi pribadi
+                sebaik, sehangat, dan sekuat dirimu sekarang.</p>
 
             <div class="pulsating-heart">🤍</div>
-            
+
             <p class="scroll-hint">✨Scroll pelan-pelan ke bawah ya sayang..✨</p>
         </section>
 
         <section class="slide glass-panel show-on-scroll">
-            <h2 class="baby-pink-text">A little prayer for you.</h2>
-            <p class="typing-text">Semoga di usiamu yang baru ini, kamu selalu dikelilingi oleh kebahagiaan, kesehatan, dan cinta yang tulus. Semoga setiap doa yang diam-diam kamu panjatkan menemukan jalannya untuk menjadi kenyataan, setiap usaha yang kamu perjuangkan membuahkan hasil terbaik, dan setiap langkah yang kamu ambil selalu membawa kamu semakin dekat dengan mimpi-mimpimu.</p>
-            <p class="typing-text">Aku juga berharap, apa pun yang akan kamu hadapi ke depannya, kamu tidak pernah merasa sendirian. Semoga aku selalu diberi kesempatan untuk menemani setiap prosesmu—merayakan setiap kebahagiaan, menguatkanmu di saat lelah, dan tetap berjalan di sisimu, bukan hanya di hari-hari yang mudah, tetapi juga di hari-hari yang penuh tantangan. Karena melihatmu bahagia akan selalu menjadi salah satu hal yang paling berarti bagiku.</p>
+            <h2 class="baby-pink-text" style="font-style: italic;">A little prayer for you.</h2>
+            <p class="fade-in-text">Semoga di usiamu yang baru ini, kamu selalu dikelilingi oleh kebahagiaan, kesehatan,
+                dan cinta yang tulus. Semoga setiap doa yang diam-diam kamu panjatkan menemukan jalannya untuk menjadi
+                kenyataan, setiap usaha yang kamu perjuangkan membuahkan hasil terbaik, dan setiap langkah yang kamu
+                ambil selalu membawa kamu semakin dekat dengan mimpi-mimpimu.</p>
+            <p class="fade-in-text">Aku juga berharap, apa pun yang akan kamu hadapi ke depannya, kamu tidak pernah
+                merasa sendirian. Semoga aku selalu diberi kesempatan untuk menemani setiap prosesmu—merayakan setiap
+                kebahagiaan, menguatkanmu di saat lelah, dan tetap berjalan di sisimu, bukan hanya di hari-hari yang
+                mudah, tetapi juga di hari-hari yang penuh tantangan. Karena melihatmu bahagia akan selalu menjadi salah
+                satu hal yang paling berarti bagiku.</p>
         </section>
 
         <section class="slide photo-panel show-on-scroll">
-            <h2 class="baby-pink-text glass-title">The Little Things I Know About You</h2>
-
-            </p>
+            <h2 class="aesthetic-font"
+                style="line-height: 0.8; margin-bottom: -15px; position: relative; top: 15px; color: #ffb6c1;">
+                <span style="font-size: 2em; display: block;">The little things</span>
+                <span style="font-size: 1.2em; display: block; opacity: 0.9; transform: translateX(40px);">i know about
+                    you</span>
+            </h2>
 
             <div class="solar-system">
                 <div class="orbit-track">
-                    
+
                     <div class="planet-card item1">
                         <img src="https://picsum.photos/300/400?random=11" alt="Food">
                         <p class="planet-caption">Your favorite food 🍜</p>
                     </div>
-                    
+
                     <div class="planet-card item2">
                         <img src="https://picsum.photos/300/400?random=12" alt="Drink">
                         <p class="planet-caption">Your favorite drink 🧋</p>
                     </div>
-                    
-                    <div class="planet-card item3" data-embed="https://open.spotify.com/embed/track/6GGtHZgBycCgGBUhZo81xe?utm_source=generator&theme=0&si=8626d2ed590a44a5">
+
+                    <div class="planet-card item3"
+                        data-embed="https://open.spotify.com/embed/track/6GGtHZgBycCgGBUhZo81xe?utm_source=generator&theme=0&si=8626d2ed590a44a5">
                         <img src="https://picsum.photos/300/400?random=13" alt="Song">
                         <p class="planet-caption">Your favorite song</p>
                     </div>
-                    
+
                     <div class="planet-card item4">
                         <img src="https://picsum.photos/300/400?random=14" alt="Color">
                         <p class="planet-caption">Your favorite color 🎨</p>
                     </div>
-                    
+
                     <div class="planet-card item5">
                         <img src="https://picsum.photos/300/400?random=15" alt="Person">
                         <p class="planet-caption">Your favorite person 🙋‍♂️</p>
@@ -90,7 +121,10 @@
         </section>
 
         <section class="slide photo-panel show-on-scroll">
-            <h2 class="aesthetic-font glass-title">Galeri Cinta Kita</h2>
+            <h2 class="aesthetic-font" style="line-height: 0.8; margin-bottom: 35px; color: #ffb6c1;">
+                <span style="font-size: 2em; display: block;">Core Memories</span>
+                <span style="font-size: 1.2em; display: block; opacity: 0.9; transform: translateX(40px);">of Us</span>
+            </h2>
             <div class="gallery-scroll">
                 <img src="https://picsum.photos/300/300?random=1" alt="Kenangan 1">
                 <img src="https://picsum.photos/300/300?random=2" alt="Kenangan 2">
@@ -124,28 +158,37 @@
 
         <section class="slide glass-panel show-on-scroll">
             <h1 class="aesthetic-font">You Are My Universe</h1>
-            
+
             <p class="typing-text" style="margin-top: 25px; margin-bottom: 15px;">
-                Setiap detik bersamamu adalah kebahagiaan yang tidak akan pernah aku tukar dengan apa pun. Terima kasih sudah bertahan, bertumbuh, dan selalu bersinar bersamaku sejauh ini.
+                Setiap detik bersamamu adalah kebahagiaan yang tidak akan pernah aku tukar dengan apa pun. Terima kasih
+                sudah bertahan, bertumbuh, dan selalu bersinar bersamaku sejauh ini.
             </p>
-            
+
             <p class="typing-text" style="margin-bottom: 40px;">
-                Di hari spesialmu ini, aku hanya ingin kamu tahu bahwa kamu sangat amat berharga. Tetaplah menjadi dirimu yang hangat dan luar biasa. Aku akan selalu ada di sini, mendukung dan mencintaimu dalam setiap fase hidupmu. Selamat bertambah usia, satu-satunya duniaku. 🤍
+                Di hari spesialmu ini, aku hanya ingin kamu tahu bahwa kamu sangat amat berharga. Tetaplah menjadi
+                dirimu yang hangat dan luar biasa. Aku akan selalu ada di sini, mendukung dan mencintaimu dalam setiap
+                fase hidupmu. Selamat bertambah usia, satu-satunya duniaku. 🤍
             </p>
-            
+
             <hr style="border: 0; border-top: 1px solid rgba(255,182,193,0.3); margin-bottom: 20px;">
-            <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 5px;">Dari orang yang paling bersyukur memilikimu,</p>
-            <p class="sender-name aesthetic-font baby-pink-text" style="font-size: 3.5rem; margin-top: 5px;">[Nama Kamu]</p>
+            <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 5px;">Dari orang yang paling bersyukur memilikimu,
+            </p>
+            <p class="sender-name aesthetic-font baby-pink-text" style="font-size: 3.5rem; margin-top: 5px;">[Nama Kamu]
+            </p>
         </section>
         <div id="image-modal" onclick="tutupModal()">
             <img id="modal-img" src="" alt="Foto Diperbesar">
-            
+
             <!-- [BARU] Tempat untuk memunculkan pemutar musik Spotify/YouTube -->
-            <iframe id="modal-iframe" src="" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-            
+            <iframe id="modal-iframe" src="" frameborder="0"
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                loading="lazy"></iframe>
+
             <p id="modal-caption" class="aesthetic-font"></p>
         </div>
 
-    </div> <script src="script.js"></script>
+    </div>
+    <script src="script.js"></script>
 </body>
+
 </html>
