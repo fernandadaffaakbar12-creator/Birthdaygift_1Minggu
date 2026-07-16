@@ -16,7 +16,6 @@
     </audio>
 
     <div id="music-popup" class="music-popup">
-        <button class="hide-popup-btn" onclick="hideMusicPopup()">✖</button>
         <p class="now-playing-top">Now Playing</p>
         <img src="https://picsum.photos/100/100?random=20" alt="Album Cover" class="album-cover">
         <div class="music-info">
@@ -45,7 +44,24 @@
 
     <div id="flash-light"></div>
 
-    <div id="landing-page">
+    <!-- Loading Screen: Animasi "I love you" membentuk hati -->
+    <div id="love-loading-screen">
+        <div id="love-particles-container"></div>
+        <p id="loading-tap-text">klik disini</p>
+    </div>
+
+    <!-- PIN Screen -->
+    <div id="pin-screen" style="display: none;">
+        <div class="pin-container glass-panel">
+            <h2>Enter PIN</h2>
+            <p>(passwordnya tanggal & bulan jadian kita)</p>
+            <input type="password" id="pin-input" maxlength="4" placeholder="****">
+            <button id="pin-submit">Buka</button>
+            <p id="pin-error" style="display: none;">PIN Salah! Coba lagi.</p>
+        </div>
+    </div>
+
+    <div id="landing-page" style="display: none;">
         <div class="bouquet-container" onclick="bukaKado()">
             <img src="img/BouquetBunga.png" alt="BouquetBunga" class="bouquet-img">
             <p class="click-text">for u my luv<br>(pencet cukingnya) </p>
@@ -83,7 +99,9 @@
             <h2 class="aesthetic-font"
                 style="line-height: 0.8; margin-bottom: -15px; position: relative; top: 15px; color: #ffb6c1;">
                 <span style="font-size: 2em; display: block;">The little things</span>
-                <span style="font-size: 1.2em; display: block; opacity: 0.9; transform: translateX(40px);">i know about
+                <span
+                    style="font-size: 1.2em; display: block; opacity: 0.9; transform: translateX(40px); color: #ffffff;">i
+                    know about
                     you</span>
             </h2>
 
@@ -92,12 +110,12 @@
 
                     <div class="planet-card item1">
                         <img src="https://picsum.photos/300/400?random=11" alt="Food">
-                        <p class="planet-caption">Your favorite food 🍜</p>
+                        <p class="planet-caption">Your favorite food</p>
                     </div>
 
                     <div class="planet-card item2">
                         <img src="https://picsum.photos/300/400?random=12" alt="Drink">
-                        <p class="planet-caption">Your favorite drink 🧋</p>
+                        <p class="planet-caption">Your favorite drink</p>
                     </div>
 
                     <div class="planet-card item3"
@@ -108,12 +126,12 @@
 
                     <div class="planet-card item4">
                         <img src="https://picsum.photos/300/400?random=14" alt="Color">
-                        <p class="planet-caption">Your favorite color 🎨</p>
+                        <p class="planet-caption">Your favorite color</p>
                     </div>
 
                     <div class="planet-card item5">
                         <img src="https://picsum.photos/300/400?random=15" alt="Person">
-                        <p class="planet-caption">Your favorite person 🙋‍♂️</p>
+                        <p class="planet-caption">Your favorite person</p>
                     </div>
 
                 </div>
@@ -123,15 +141,35 @@
         <section class="slide photo-panel show-on-scroll">
             <h2 class="aesthetic-font" style="line-height: 0.8; margin-bottom: 35px; color: #ffb6c1;">
                 <span style="font-size: 2em; display: block;">Core Memories</span>
-                <span style="font-size: 1.2em; display: block; opacity: 0.9; transform: translateX(40px);">of Us</span>
+                <span
+                    style="font-size: 1.2em; display: block; opacity: 0.9; transform: translateX(40px); color: #ffffff;">of
+                    Us</span>
             </h2>
             <div class="gallery-scroll">
-                <img src="https://picsum.photos/300/300?random=1" alt="Kenangan 1">
-                <img src="https://picsum.photos/300/300?random=2" alt="Kenangan 2">
-                <img src="https://picsum.photos/300/300?random=3" alt="Kenangan 3">
-                <img src="https://picsum.photos/300/300?random=4" alt="Kenangan 4">
-                <img src="https://picsum.photos/300/300?random=5" alt="Kenangan 5">
-                <img src="https://picsum.photos/300/300?random=6" alt="Kenangan 6">
+                <div class="scratch-card">
+                    <img src="img/pacarku.png" alt="Kenangan 1">
+                    <canvas class="scratch-canvas"></canvas>
+                </div>
+                <div class="scratch-card">
+                    <img src="https://picsum.photos/300/300?random=2" alt="Kenangan 2">
+                    <canvas class="scratch-canvas"></canvas>
+                </div>
+                <div class="scratch-card">
+                    <img src="https://picsum.photos/300/300?random=3" alt="Kenangan 3">
+                    <canvas class="scratch-canvas"></canvas>
+                </div>
+                <div class="scratch-card">
+                    <img src="https://picsum.photos/300/300?random=4" alt="Kenangan 4">
+                    <canvas class="scratch-canvas"></canvas>
+                </div>
+                <div class="scratch-card">
+                    <img src="https://picsum.photos/300/300?random=5" alt="Kenangan 5">
+                    <canvas class="scratch-canvas"></canvas>
+                </div>
+                <div class="scratch-card">
+                    <img src="https://picsum.photos/300/300?random=6" alt="Kenangan 6">
+                    <canvas class="scratch-canvas"></canvas>
+                </div>
             </div>
         </section>
 

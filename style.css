@@ -45,6 +45,139 @@ body {
 }
 
 /* =========================================
+   ANIMASI LOADING "I LOVE YOU" HATI
+========================================= */
+#love-loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at center, #0a0020 0%, #000008 70%, #000000 100%);
+    z-index: 99999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    cursor: pointer;
+    transition: opacity 1s ease, visibility 1s ease;
+}
+
+#love-loading-screen.fade-out {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+#love-particles-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.love-particle {
+    position: absolute;
+    font-family: 'Caveat', cursive;
+    font-size: 10px;
+    color: rgba(255, 182, 193, 0.9);
+    white-space: nowrap;
+    pointer-events: none;
+    text-shadow: 0 0 6px rgba(255, 120, 180, 0.6);
+    transition: transform 1.5s ease-in-out, opacity 0.8s ease;
+    opacity: 0;
+    transform: translate(0, 0);
+    will-change: transform, opacity;
+}
+
+.love-particle.scattered {
+    opacity: 1;
+}
+
+.love-particle.formed {
+    opacity: 1;
+    text-shadow: 0 0 8px rgba(255, 120, 180, 0.8), 0 0 20px rgba(255, 100, 150, 0.4);
+}
+
+.love-particle.glow-pulse {
+    animation: particleGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes particleGlow {
+    0% {
+        text-shadow: 0 0 8px rgba(255, 120, 180, 0.8), 0 0 20px rgba(255, 100, 150, 0.5);
+        filter: brightness(1);
+    }
+
+    100% {
+        text-shadow: 0 0 15px rgba(255, 120, 180, 1), 0 0 35px rgba(255, 100, 150, 0.8), 0 0 60px rgba(200, 50, 100, 0.5);
+        filter: brightness(1.3);
+    }
+}
+
+.heart-sparkle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: white;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+    box-shadow: 0 0 6px 2px rgba(255, 182, 193, 0.8);
+}
+
+@keyframes sparkleFloat {
+    0% {
+        opacity: 0;
+        transform: translateY(0) scale(0);
+    }
+
+    20% {
+        opacity: 1;
+        transform: translateY(-10px) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-60px) scale(0.3);
+    }
+}
+
+#loading-tap-text {
+    position: absolute;
+    bottom: 60px;
+    top: auto;
+    left: 50%;
+    transform: translate(-50%, 0);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 2px;
+    text-transform: lowercase;
+    opacity: 0;
+    transition: opacity 1s ease;
+}
+
+#loading-tap-text.show {
+    opacity: 1;
+    animation: tapPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes tapPulse {
+
+    0%,
+    100% {
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+}
+
+
+/* =========================================
    ANIMASI LUAR ANGKASA (Tanpa Bintang Jatuh)
 ========================================= */
 .stars,
@@ -302,7 +435,7 @@ body {
     align-items: center;
     perspective: 1500px;
     /* Diperbesar agar efek 3D tetap proporsional */
-    overflow: hidden;
+    overflow: visible;
     margin-top: 20px;
 }
 
@@ -555,28 +688,46 @@ body {
     /* Chrome/Safari */
 }
 
-.gallery-scroll img {
+.scratch-card {
+    position: relative;
     flex: 0 0 auto;
     width: 220px;
     aspect-ratio: 9 / 16;
-    object-fit: cover;
     border-radius: 10px;
     border: 2px solid rgba(255, 255, 255, 0.3) !important;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5) !important;
     cursor: pointer;
     scroll-snap-align: center;
     animation: float-photo 4s ease-in-out infinite;
+    overflow: hidden;
 }
 
-.gallery-scroll img:nth-child(even) {
+.scratch-card:nth-child(even) {
     animation-delay: 1s;
     animation-duration: 5s;
 }
 
-.gallery-scroll img:hover {
+.scratch-card:hover {
     border-color: #ffffff !important;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7) !important;
-    filter: brightness(1.1);
+}
+
+.scratch-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+}
+
+.scratch-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    cursor: pointer;
 }
 
 /* =========================================
@@ -733,8 +884,7 @@ body {
     -webkit-backdrop-filter: blur(15px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
-    padding: 25px 15px 15px 15px;
-    /* Beri ruang di atas untuk tombol close */
+    padding: 15px;
     display: flex;
     flex-direction: column;
     /* Ubah ke layout vertikal (kotak) */
@@ -744,22 +894,6 @@ body {
     z-index: 9999;
     /* Animasi lambat ditarik */
     transition: left 1s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-.hide-popup-btn {
-    position: absolute;
-    top: 5px;
-    right: 8px;
-    background: none;
-    border: none;
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 1rem;
-    cursor: pointer;
-    transition: color 0.2s;
-}
-
-.hide-popup-btn:hover {
-    color: #ffffff;
 }
 
 .now-playing-top {
@@ -1035,4 +1169,150 @@ body {
     .show-music-btn.show-btn {
         left: 0;
     }
+}
+
+/* =========================================
+   PIN SCREEN
+========================================= */
+#pin-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    background: radial-gradient(circle at center, #1a1a2e 0%, #0f0f1a 100%);
+    opacity: 0;
+    transition: opacity 1s ease;
+}
+
+#pin-screen.active {
+    opacity: 1;
+}
+
+.pin-container {
+    text-align: center;
+    padding: 40px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    transform: scale(0.8);
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    width: 90%;
+    max-width: 350px;
+}
+
+#pin-screen.active .pin-container {
+    transform: scale(1);
+}
+
+.pin-container h2 {
+    color: #fff;
+    margin-bottom: 5px;
+    font-family: 'Outfit', sans-serif;
+}
+
+.pin-container p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+    margin-bottom: 25px;
+}
+
+#pin-input {
+    width: 80%;
+    padding: 12px;
+    font-size: 1.5rem;
+    text-align: center;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    letter-spacing: 15px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+#pin-input:focus {
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 15px rgba(255, 117, 140, 0.4);
+}
+
+#pin-submit {
+    width: 80%;
+    padding: 12px;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#pin-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 117, 140, 0.4);
+}
+
+#pin-error {
+    color: #ff4d4d;
+    font-size: 0.85rem;
+    margin-top: 15px;
+    margin-bottom: 0;
+}
+
+.shake-animation {
+    animation: shakeError 0.4s ease-in-out;
+}
+
+@keyframes shakeError {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-10px);
+    }
+
+    50% {
+        transform: translateX(10px);
+    }
+
+    75% {
+        transform: translateX(-10px);
+    }
+}
+
+/* =========================================
+   BOUQUET FADE IN ANIMATION
+========================================= */
+@keyframes bouquetFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.bouquet-img {
+    opacity: 0;
+    animation: bouquetFadeIn 1.5s ease-out 0.3s forwards;
+}
+
+.click-text {
+    opacity: 0;
+    animation: bouquetFadeIn 1.5s ease-out 0.8s forwards;
 }
