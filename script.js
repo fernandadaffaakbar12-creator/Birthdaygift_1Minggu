@@ -164,39 +164,76 @@
         });
 
         // ==========================================
-        // PIN VALIDATION LOGIC
+        // PIN VALIDATION LOGIC (Auto-submit + Toast)
         // ==========================================
-        const pinSubmitBtn = document.getElementById('pin-submit');
         const pinInput = document.getElementById('pin-input');
-        const pinError = document.getElementById('pin-error');
+        const pinToast = document.getElementById('pin-toast');
+        const pinToastIcon = document.getElementById('pin-toast-icon');
+        const pinToastMsg = document.getElementById('pin-toast-msg');
 
-        // DEFAULT PIN: Silakan ubah angka 2607 ini jika ingin PIN lain
+        // DEFAULT PIN: Silakan ubah angka ini jika ingin PIN lain
         const SECRET_PIN = "2708";
 
-        if (pinSubmitBtn && pinInput) {
-            pinSubmitBtn.addEventListener('click', verifyPin);
-            pinInput.addEventListener('keypress', function (e) {
-                if (e.key === 'Enter') verifyPin();
-            });
+        let pinAttempt = 0;
+        const wrongMessages = [
+            "Masa tanggal jadian kita lupa?",
+            "Serius lupa?",
+            "Kalau masih salah, keterlaluan sih."
+        ];
 
-            function verifyPin() {
-                if (pinInput.value === SECRET_PIN) {
-                    const pinScreen = document.getElementById('pin-screen');
-                    pinScreen.classList.remove('active');
-                    pinError.style.display = 'none';
+        function showToast(message, isSuccess) {
+            // Set icon & message
+            pinToastIcon.textContent = isSuccess ? '✅' : '⚠️';
+            pinToastMsg.textContent = message;
 
+            // Reset classes
+            pinToast.classList.remove('show-toast', 'toast-success', 'toast-error');
+
+            // Add appropriate class
+            pinToast.classList.add(isSuccess ? 'toast-success' : 'toast-error');
+
+            // Trigger reflow then show
+            void pinToast.offsetWidth;
+            pinToast.classList.add('show-toast');
+
+            // Auto-hide after delay
+            setTimeout(() => {
+                pinToast.classList.remove('show-toast');
+            }, isSuccess ? 2000 : 2500);
+        }
+
+        if (pinInput) {
+            pinInput.addEventListener('input', function () {
+                if (pinInput.value.length === 4) {
+                    // Delay sedikit agar digit terakhir terasa diketik
                     setTimeout(() => {
-                        pinScreen.style.display = 'none';
-                        const landingPage = document.getElementById('landing-page');
-                        if (landingPage) landingPage.style.display = '';
-                    }, 1000); // Tunggu animasi fade out selesai
-                } else {
-                    pinError.style.display = 'block';
-                    pinInput.classList.add('shake-animation');
-                    setTimeout(() => pinInput.classList.remove('shake-animation'), 400);
-                    pinInput.value = ''; // Reset input
+                        if (pinInput.value === SECRET_PIN) {
+                            // PIN BENAR
+                            showToast("Valid. Lanjut ya", true);
+
+                            setTimeout(() => {
+                                const pinScreen = document.getElementById('pin-screen');
+                                pinScreen.classList.remove('active');
+
+                                setTimeout(() => {
+                                    pinScreen.style.display = 'none';
+                                    const landingPage = document.getElementById('landing-page');
+                                    if (landingPage) landingPage.style.display = '';
+                                }, 1000);
+                            }, 1500);
+                        } else {
+                            // PIN SALAH
+                            const msgIndex = Math.min(pinAttempt, wrongMessages.length - 1);
+                            showToast(wrongMessages[msgIndex], false);
+                            pinAttempt++;
+
+                            pinInput.classList.add('shake-animation');
+                            setTimeout(() => pinInput.classList.remove('shake-animation'), 400);
+                            pinInput.value = '';
+                        }
+                    }, 150);
                 }
-            }
+            });
         }
     }
 
@@ -391,7 +428,7 @@ function jalankanAnimasiScroll() {
 async function mulaiKetikanBerurutan(slideTarget) {
     const teksKetikan = slideTarget.querySelectorAll('.typing-text');
 
-    await new Promise(resolve => setTimeout(resolve, 600));
+    await new Promise(resolve => setTimeout(resolve, 3500));
 
     for (let i = 0; i < teksKetikan.length; i++) {
         const el = teksKetikan[i];
@@ -495,30 +532,120 @@ function showMusicPopup() {
 })();
 
 // ==========================================
-// SCRATCH CARD (ERASER EFFECT) LOGIC
+// SCRATCH CARD (ERASER EFFECT) + GALLERY UNLOCK LOGIC
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     const canvases = document.querySelectorAll('.scratch-canvas');
+    const galleryScroll = document.querySelector('.gallery-scroll');
+    const galleryHint = document.getElementById('gallery-hint');
+    const gallerySlider = document.getElementById('gallery-slider');
+    const gallerySliderThumb = document.getElementById('gallery-slider-thumb');
     
-    canvases.forEach(canvas => {
+    const totalCanvases = canvases.length;
+    const clearedSet = new Set();
+    let galleryUnlocked = false;
+
+    function updateSlider() {
+        if (!gallerySliderThumb || !galleryScroll) return;
+        const maxScroll = galleryScroll.scrollWidth - galleryScroll.clientWidth;
+        if (maxScroll > 0) {
+            const scrollPercent = galleryScroll.scrollLeft / maxScroll;
+            const trackWidth = gallerySliderThumb.parentElement.clientWidth;
+            const thumbWidth = gallerySliderThumb.clientWidth;
+            const maxLeft = trackWidth - thumbWidth;
+            gallerySliderThumb.style.left = (scrollPercent * maxLeft) + 'px';
+        }
+    }
+
+    function scrollToCard(cardIndex) {
+        if (!galleryScroll) return;
+        const cards = galleryScroll.querySelectorAll('.scratch-card');
+        if (cardIndex < cards.length) {
+            // Sementara aktifkan scroll agar scrollIntoView bisa jalan
+            galleryScroll.style.overflowX = 'auto';
+            cards[cardIndex].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            // Kunci lagi setelah scroll selesai
+            setTimeout(() => {
+                if (!galleryUnlocked) {
+                    galleryScroll.style.overflowX = 'hidden';
+                }
+                updateSlider();
+            }, 600);
+        }
+    }
+
+    // Tampilkan slider dari awal
+    if (gallerySlider) {
+        gallerySlider.classList.add('slider-visible');
+    }
+
+    function checkCanvasCleared(canvas, index) {
+        if (clearedSet.has(index)) return;
+        
+        const ctx = canvas.getContext('2d');
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const pixels = imageData.data;
+        let transparentCount = 0;
+        let sampledCount = 0;
+        
+        for (let i = 3; i < pixels.length; i += 8) {
+            sampledCount++;
+            if (pixels[i] === 0) transparentCount++;
+        }
+        
+        const ratio = transparentCount / sampledCount;
+        if (ratio > 0.45) {
+            clearedSet.add(index);
+            // Fade out sisa canvas
+            canvas.style.transition = 'opacity 0.5s ease';
+            canvas.style.opacity = '0';
+            setTimeout(() => {
+                canvas.style.pointerEvents = 'none';
+            }, 500);
+            
+            // Update hint
+            if (galleryHint) {
+                galleryHint.textContent = '✨ Foto ' + clearedSet.size + ' dari ' + totalCanvases + ' terbuka ✨';
+            }
+
+            // Cek apakah semua sudah dibersihkan
+            if (clearedSet.size >= totalCanvases) {
+                // Semua selesai — unlock untuk geser bebas
+                galleryUnlocked = true;
+                if (galleryScroll) {
+                    galleryScroll.classList.add('gallery-unlocked');
+                    galleryScroll.style.overflowX = 'auto';
+                    galleryScroll.style.touchAction = 'pan-x pan-y';
+                    // Sync slider saat scroll bebas
+                    galleryScroll.addEventListener('scroll', updateSlider);
+                }
+                if (galleryHint) {
+                    galleryHint.textContent = '✨ Semua terbuka! Geser untuk melihat →';
+                    galleryHint.classList.add('hint-unlocked');
+                }
+            } else {
+                // Auto-scroll ke foto berikutnya
+                setTimeout(() => {
+                    scrollToCard(index + 1);
+                }, 700);
+            }
+        }
+    }
+    
+    canvases.forEach((canvas, index) => {
         const ctx = canvas.getContext('2d');
         let isDrawing = false;
-        let brushRadius = 25; // Ukuran penghapus
+        let brushRadius = 25;
+        let drawMoveCount = 0;
 
-        // Beri sedikit delay agar browser memuat DOM
         setTimeout(() => {
-            // Karena elemen ini disembunyikan di awal (display: none),
-            // getBoundingClientRect() akan menghasilkan 0. 
-            // Kita hardcode ukurannya sesuai CSS (.scratch-card width: 220px, aspect-ratio: 9/16)
             canvas.width = 220;
-            canvas.height = Math.round(220 * 16 / 9); // ~391px
+            canvas.height = Math.round(220 * 16 / 9);
 
-            // 1. Gambar layer hitam penutup
             ctx.fillStyle = '#0a0a0a';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // 2. Tambahkan efek glitter (bintik-bintik kecil)
-            for(let i = 0; i < 200; i++) {
+            for (let i = 0; i < 200; i++) {
                 ctx.beginPath();
                 ctx.arc(
                     Math.random() * canvas.width,
@@ -530,24 +657,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.fill();
             }
 
-            // 3. Ubah mode compositing agar brush menghapus piksel (menjadi transparan)
             ctx.globalCompositeOperation = 'destination-out';
             
-            // 4. Logika Menggambar/Menghapus
             const startPosition = (e) => {
                 isDrawing = true;
+                drawMoveCount = 0;
                 draw(e);
             };
 
             const endPosition = () => {
                 isDrawing = false;
-                ctx.beginPath(); // Reset garis agar tidak menyambung ke sentuhan berikutnya
+                ctx.beginPath();
+                // Cek setiap kali selesai menggosok
+                checkCanvasCleared(canvas, index);
             };
 
             const draw = (e) => {
                 if (!isDrawing) return;
-                
-                // e.preventDefault(); // Jangan halangi scroll secara default kecuali saat menggesek
                 
                 let clientX, clientY;
                 if (e.type.includes('touch')) {
@@ -568,19 +694,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.stroke();
                 ctx.beginPath();
                 ctx.moveTo(x, y);
+
+                // Juga cek selama menggosok setiap 15 gerakan
+                drawMoveCount++;
+                if (drawMoveCount % 15 === 0) {
+                    checkCanvasCleared(canvas, index);
+                }
             };
 
-            // Pasang event listener untuk Mouse
             canvas.addEventListener('mousedown', startPosition);
             canvas.addEventListener('mouseup', endPosition);
             canvas.addEventListener('mousemove', draw);
             canvas.addEventListener('mouseleave', endPosition);
             
-            // Pasang event listener untuk Touchscreen (HP)
             canvas.addEventListener('touchstart', startPosition, { passive: true });
             canvas.addEventListener('touchend', endPosition);
             canvas.addEventListener('touchmove', (e) => {
-                if(isDrawing) e.preventDefault(); // Cegah layar ikut ke-scroll saat sedang menggesek foto
+                if (isDrawing) e.preventDefault();
                 draw(e);
             }, { passive: false });
             
