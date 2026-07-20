@@ -601,16 +601,28 @@ body {
     transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-/* Desain khusus untuk pemutar musik Spotify/YouTube */
+/* Desain dasar iframe (akan diubah rasionya via JS) */
 #modal-iframe {
     display: none;
-    width: 90vw;
-    max-width: 350px;
-    height: 352px;
     border-radius: 15px;
     box-shadow: 0 10px 50px rgba(255, 182, 193, 0.5);
     transform: scale(0.7);
     transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Rasio khusus untuk Spotify (Kotak) */
+#modal-iframe.iframe-spotify {
+    width: 90vw;
+    max-width: 350px;
+    height: 152px;
+}
+
+/* Rasio khusus untuk YouTube (16:9 Landscape) */
+#modal-iframe.iframe-youtube {
+    width: 90vw;
+    max-width: 650px;
+    aspect-ratio: 16 / 9;
+    height: auto; /* Tinggi otomatis menyesuaikan aspect ratio */
 }
 
 #image-modal.show-modal #modal-iframe {
@@ -1293,87 +1305,194 @@ body {
 }
 
 /* =========================================
-   TOAST NOTIFICATION (PIN)
+   POP-UP NOTIFIKASI PIN (CENTERED)
 ========================================= */
-.pin-toast {
+.pin-popup-overlay {
     position: fixed;
-    top: -100px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 100000;
     display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 10px;
-    padding: 14px 24px;
-    border-radius: 14px;
-    background: rgba(20, 20, 35, 0.9);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
-    z-index: 99999;
     opacity: 0;
-    transition: top 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
-    white-space: nowrap;
-    font-family: 'Outfit', sans-serif;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
 }
 
-.pin-toast.show-toast {
-    top: 40px;
+.pin-popup-overlay.show-popup {
     opacity: 1;
+    visibility: visible;
 }
 
-.pin-toast.toast-error {
-    border-color: rgba(255, 100, 100, 0.35);
-    box-shadow: 0 8px 32px rgba(255, 80, 80, 0.15), 0 0 0 1px rgba(255, 100, 100, 0.1);
+.pin-popup-box {
+    background: linear-gradient(145deg, rgba(30, 15, 50, 0.95), rgba(15, 10, 35, 0.98));
+    border: 1px solid rgba(255, 182, 193, 0.25);
+    border-radius: 24px;
+    padding: 35px 30px 28px;
+    text-align: center;
+    max-width: 320px;
+    width: 85%;
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.6),
+        0 0 40px rgba(255, 182, 193, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transform: scale(0) rotate(-8deg);
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    overflow: visible;
 }
 
-.pin-toast.toast-success {
-    border-color: rgba(100, 255, 150, 0.35);
-    box-shadow: 0 8px 32px rgba(100, 255, 150, 0.15), 0 0 0 1px rgba(100, 255, 150, 0.1);
+.pin-popup-overlay.show-popup .pin-popup-box {
+    transform: scale(1) rotate(0deg);
 }
 
-#pin-toast-icon {
-    font-size: 1.2rem;
+/* Gambar Kucing */
+.pin-popup-img {
+    width: 140px;
+    height: auto;
+    display: block;
+    margin: -70px auto 15px auto;
+    filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.5));
+    animation: none;
+    transition: transform 0.3s ease;
+}
+
+.pin-popup-img.wiggle-cat {
+    animation: wiggleCat 0.6s ease-in-out 3;
+}
+
+.pin-popup-img.hidden-img {
+    display: none;
+}
+
+/* Emoji besar untuk pesan tanpa gambar */
+.pin-popup-emoji {
+    font-size: 4rem;
     line-height: 1;
+    margin-bottom: 12px;
+    display: none;
 }
 
-#pin-toast-msg {
-    color: #ffffff;
-    font-size: 0.95rem;
+.pin-popup-emoji.show-emoji {
+    display: block;
+    animation: bounceEmoji 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Teks Pesan */
+.pin-popup-msg {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.05rem;
     font-weight: 500;
-    letter-spacing: 0.3px;
+    color: #ffffff;
+    line-height: 1.5;
+    margin: 0 0 22px 0;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s ease 0.2s, transform 0.4s ease 0.2s;
 }
 
-.toast-error #pin-toast-msg {
-    color: #ffb0b0;
+.pin-popup-overlay.show-popup .pin-popup-msg {
+    opacity: 1;
+    transform: translateY(0);
 }
 
-.toast-success #pin-toast-msg {
-    color: #b0ffc8;
+/* Tombol Tutup */
+.pin-popup-close {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 10px 28px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #ff7eb3, #ff758c);
+    color: #ffffff;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(255, 117, 140, 0.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.3s ease 0.35s, transform 0.3s ease 0.35s, box-shadow 0.2s ease, background 0.2s ease;
 }
 
+.pin-popup-overlay.show-popup .pin-popup-close {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.pin-popup-close:hover {
+    background: linear-gradient(135deg, #ff9ac6, #ff8da0);
+    box-shadow: 0 6px 25px rgba(255, 117, 140, 0.6);
+    transform: translateY(-2px) !important;
+}
+
+.pin-popup-close:active {
+    transform: scale(0.95) !important;
+}
+
+/* Untuk pesan sukses */
+.pin-popup-box.popup-success {
+    border-color: rgba(100, 255, 150, 0.3);
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.6),
+        0 0 40px rgba(100, 255, 150, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.pin-popup-box.popup-success .pin-popup-close {
+    background: linear-gradient(135deg, #64ffb0, #43e897);
+    color: #0a2a15;
+    box-shadow: 0 4px 15px rgba(100, 255, 150, 0.3);
+}
+
+/* =========================================
+   ANIMASI POP-UP PIN
+========================================= */
+@keyframes wiggleCat {
+    0%, 100% { transform: rotate(0deg) scale(1); }
+    15% { transform: rotate(-12deg) scale(1.05); }
+    30% { transform: rotate(10deg) scale(1.08); }
+    45% { transform: rotate(-8deg) scale(1.05); }
+    60% { transform: rotate(6deg) scale(1.03); }
+    75% { transform: rotate(-3deg) scale(1.01); }
+}
+
+@keyframes bounceEmoji {
+    0% { transform: scale(0) rotate(-20deg); opacity: 0; }
+    50% { transform: scale(1.3) rotate(5deg); opacity: 1; }
+    70% { transform: scale(0.9) rotate(-3deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes popupShake {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    10% { transform: scale(1) rotate(-2deg) translateX(-4px); }
+    20% { transform: scale(1.02) rotate(2deg) translateX(4px); }
+    30% { transform: scale(1) rotate(-1deg) translateX(-3px); }
+    40% { transform: scale(1.01) rotate(1deg) translateX(3px); }
+    50% { transform: scale(1) rotate(0deg); }
+}
+
+.pin-popup-box.shake-popup {
+    animation: popupShake 0.5s ease-in-out;
+}
+
+/* PIN Input Shake */
 .shake-animation {
     animation: shakeError 0.4s ease-in-out;
 }
 
 @keyframes shakeError {
-
-    0%,
-    100% {
-        transform: translateX(0);
-    }
-
-    25% {
-        transform: translateX(-10px);
-    }
-
-    50% {
-        transform: translateX(10px);
-    }
-
-    75% {
-        transform: translateX(-10px);
-    }
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    50% { transform: translateX(10px); }
+    75% { transform: translateX(-10px); }
 }
 
 /* =========================================

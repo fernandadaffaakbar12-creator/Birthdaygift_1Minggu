@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Happy Birthday Cintaku!</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Outfit:wght@300;400;600&display=swap"
@@ -60,10 +61,14 @@
         </div>
     </div>
 
-    <!-- Toast Notification untuk PIN -->
-    <div id="pin-toast" class="pin-toast">
-        <span id="pin-toast-icon"></span>
-        <span id="pin-toast-msg"></span>
+    <!-- Pop-Up Notifikasi PIN (Centered) -->
+    <div id="pin-popup-overlay" class="pin-popup-overlay">
+        <div id="pin-popup-box" class="pin-popup-box">
+            <img id="pin-popup-img" src="img/cat-warning.png" alt="Warning Cat" class="pin-popup-img">
+            <div class="pin-popup-emoji" id="pin-popup-emoji"></div>
+            <p id="pin-popup-msg" class="pin-popup-msg"></p>
+            <button class="pin-popup-close" id="pin-popup-close">Iya iya 😤</button>
+        </div>
     </div>
 
     <div id="landing-page" style="display: none;">
@@ -130,9 +135,10 @@
                         <p class="planet-caption">Your favorite song</p>
                     </div>
 
-                    <div class="planet-card item4">
-                        <img src="https://picsum.photos/300/400?random=14" alt="Color">
-                        <p class="planet-caption">Your favorite color</p>
+                    <div class="planet-card item4"
+                        data-embed="https://www.youtube.com/embed/9cMjVnTv43o?si=JT8ykiXzhbEdZrae">
+                        <img src="img/favorite-yt.png" alt="YouTube">
+                        <p class="planet-caption">Your favorite youtube channel</p>
                     </div>
 
                     <div class="planet-card item5">
@@ -165,19 +171,19 @@
                     <canvas class="scratch-canvas"></canvas>
                 </div>
                 <div class="scratch-card">
-                    <img src="https://picsum.photos/300/300?random=4" alt="Kenangan 4">
+                    <img src="img/core-memories4.jpg" alt="Kenangan 4">
                     <canvas class="scratch-canvas"></canvas>
                 </div>
                 <div class="scratch-card">
-                    <img src="https://picsum.photos/300/300?random=5" alt="Kenangan 5">
+                    <img src="img/core-memories5.jpg" alt="Kenangan 5">
                     <canvas class="scratch-canvas"></canvas>
                 </div>
                 <div class="scratch-card">
-                    <img src="https://picsum.photos/300/300?random=6" alt="Kenangan 6">
+                    <img src="img/core-memories6.jpg" alt="Kenangan 6">
                     <canvas class="scratch-canvas"></canvas>
                 </div>
             </div>
-            <p id="gallery-hint" class="gallery-hint">✨ Gosok semua foto dulu ya! ✨</p>
+            <p id="gallery-hint" class="gallery-hint">✨ Gosok semua fotonya dulu yaa! ✨</p>
             <div id="gallery-slider" class="gallery-slider">
                 <div class="gallery-slider-track">
                     <div id="gallery-slider-thumb" class="gallery-slider-thumb"></div>
@@ -188,19 +194,19 @@
         <section class="slide photo-panel show-on-scroll">
             <div class="polaroid-grid">
                 <div class="polaroid">
-                    <img src="https://picsum.photos/250/250?random=7" alt="Foto Pribadi 1">
+                    <img src="img/you.jpg" alt="Foto Pribadi 1">
                     <p class="caption">You</p>
                 </div>
                 <div class="polaroid">
-                    <img src="https://picsum.photos/250/250?random=8" alt="Foto Pribadi 2">
+                    <img src="img/are.jpg" alt="Foto Pribadi 2">
                     <p class="caption">Are</p>
                 </div>
                 <div class="polaroid">
-                    <img src="https://picsum.photos/250/250?random=9" alt="Foto Pribadi 3">
+                    <img src="img/so.jpg" alt="Foto Pribadi 3">
                     <p class="caption">So</p>
                 </div>
                 <div class="polaroid">
-                    <img src="https://picsum.photos/250/250?random=10" alt="Foto Pribadi 4">
+                    <img src="img/beautiful.jpg" alt="Foto Pribadi 4">
                     <p class="caption">Beautiful</p>
                 </div>
             </div>

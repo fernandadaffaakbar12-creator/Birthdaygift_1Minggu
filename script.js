@@ -164,42 +164,119 @@
         });
 
         // ==========================================
-        // PIN VALIDATION LOGIC (Auto-submit + Toast)
+        // PIN VALIDATION LOGIC (Pop-Up Notifikasi)
         // ==========================================
         const pinInput = document.getElementById('pin-input');
-        const pinToast = document.getElementById('pin-toast');
-        const pinToastIcon = document.getElementById('pin-toast-icon');
-        const pinToastMsg = document.getElementById('pin-toast-msg');
+        const pinPopupOverlay = document.getElementById('pin-popup-overlay');
+        const pinPopupBox = document.getElementById('pin-popup-box');
+        const pinPopupImg = document.getElementById('pin-popup-img');
+        const pinPopupEmoji = document.getElementById('pin-popup-emoji');
+        const pinPopupMsg = document.getElementById('pin-popup-msg');
+        const pinPopupClose = document.getElementById('pin-popup-close');
 
         // DEFAULT PIN: Silakan ubah angka ini jika ingin PIN lain
         const SECRET_PIN = "2708";
 
         let pinAttempt = 0;
-        const wrongMessages = [
-            "Masa tanggal jadian kita lupa?",
-            "Serius lupa?",
-            "Kalau masih salah, keterlaluan sih."
+        let popupTimeout = null;
+
+        // Konfigurasi pesan & tampilan setiap percobaan salah
+        const wrongConfigs = [
+            {
+                // Percobaan pertama: tampilkan foto kucing
+                showCat: true,
+                emoji: '',
+                message: 'Masa tanggal jadian kita lupa?',
+                buttonText: 'Iya iya maaf 😭'
+            },
+            {
+                // Percobaan kedua: foto kucing marah
+                showCat: true,
+                catSrc: 'img/cat-angry.png',
+                emoji: '',
+                message: 'Serius lupa?!\nYaudah coba lagi deh.',
+                buttonText: 'Sekali lagi 🙏'
+            },
+            {
+                // Percobaan ketiga+: foto kucing thumbs up
+                showCat: true,
+                catSrc: 'img/cat-thumbsup.png',
+                emoji: '',
+                message: 'Kalau masih salah,\nketerlaluan sih.',
+                buttonText: 'Ampun 😭'
+            }
         ];
 
-        function showToast(message, isSuccess) {
-            // Set icon & message
-            pinToastIcon.textContent = isSuccess ? '✅' : '⚠️';
-            pinToastMsg.textContent = message;
+        function showPinPopup(config, isSuccess) {
+            // Bersihkan timeout sebelumnya
+            if (popupTimeout) clearTimeout(popupTimeout);
 
-            // Reset classes
-            pinToast.classList.remove('show-toast', 'toast-success', 'toast-error');
+            // Reset semua state
+            pinPopupBox.classList.remove('popup-success', 'shake-popup');
+            pinPopupImg.classList.remove('wiggle-cat', 'hidden-img');
+            pinPopupEmoji.classList.remove('show-emoji');
+            pinPopupEmoji.textContent = '';
 
-            // Add appropriate class
-            pinToast.classList.add(isSuccess ? 'toast-success' : 'toast-error');
+            if (isSuccess) {
+                // Tampilan sukses — pakai foto kucing senang
+                pinPopupImg.src = 'img/cat-success.png';
+                pinPopupImg.classList.remove('hidden-img');
+                pinPopupBox.classList.add('popup-success');
+                pinPopupMsg.textContent = config.message;
+                pinPopupClose.textContent = config.buttonText;
+                setTimeout(() => {
+                    pinPopupImg.classList.add('wiggle-cat');
+                }, 400);
+            } else {
+                // Tampilan salah
+                if (config.showCat) {
+                    // Tampilkan gambar kucing + animasi wiggle
+                    pinPopupImg.src = config.catSrc || 'img/cat-warning.png';
+                    pinPopupImg.classList.remove('hidden-img');
+                    setTimeout(() => {
+                        pinPopupImg.classList.add('wiggle-cat');
+                    }, 400);
+                } else {
+                    // Sembunyikan gambar, tampilkan emoji
+                    pinPopupImg.classList.add('hidden-img');
+                    pinPopupEmoji.textContent = config.emoji;
+                    pinPopupEmoji.classList.add('show-emoji');
+                    // Tambah padding atas karena tidak ada gambar yang menonjol
+                    pinPopupBox.style.paddingTop = '30px';
+                }
 
-            // Trigger reflow then show
-            void pinToast.offsetWidth;
-            pinToast.classList.add('show-toast');
+                pinPopupMsg.textContent = config.message;
+                pinPopupClose.textContent = config.buttonText;
 
-            // Auto-hide after delay
-            setTimeout(() => {
-                pinToast.classList.remove('show-toast');
-            }, isSuccess ? 2000 : 2500);
+                // Shake animation setelah muncul
+                setTimeout(() => {
+                    pinPopupBox.classList.add('shake-popup');
+                }, 500);
+            }
+
+            // Tampilkan pop-up
+            pinPopupOverlay.classList.add('show-popup');
+        }
+
+        function closePinPopup() {
+            pinPopupOverlay.classList.remove('show-popup');
+            if (popupTimeout) clearTimeout(popupTimeout);
+            // Reset padding
+            pinPopupBox.style.paddingTop = '';
+        }
+
+        // Event listener untuk tombol tutup
+        if (pinPopupClose) {
+            pinPopupClose.addEventListener('click', closePinPopup);
+        }
+
+        // Tutup pop-up dengan klik overlay (di luar box)
+        if (pinPopupOverlay) {
+            pinPopupOverlay.addEventListener('click', function (e) {
+                if (e.target === pinPopupOverlay) {
+                    closePinPopup();
+                }
+            });
         }
 
         if (pinInput) {
@@ -209,27 +286,52 @@
                     setTimeout(() => {
                         if (pinInput.value === SECRET_PIN) {
                             // PIN BENAR
-                            showToast("Valid. Lanjut ya", true);
+                            showPinPopup({
+                                message: 'Valid!\nLanjut ya sayang~',
+                                buttonText: 'Lanjut 💕'
+                            }, true);
 
-                            setTimeout(() => {
-                                const pinScreen = document.getElementById('pin-screen');
-                                pinScreen.classList.remove('active');
-
+                            // Auto-close dan lanjut setelah 2 detik
+                            popupTimeout = setTimeout(() => {
+                                closePinPopup();
                                 setTimeout(() => {
-                                    pinScreen.style.display = 'none';
-                                    const landingPage = document.getElementById('landing-page');
-                                    if (landingPage) landingPage.style.display = '';
-                                }, 1000);
-                            }, 1500);
+                                    const pinScreen = document.getElementById('pin-screen');
+                                    pinScreen.classList.remove('active');
+
+                                    setTimeout(() => {
+                                        pinScreen.style.display = 'none';
+                                        const landingPage = document.getElementById('landing-page');
+                                        if (landingPage) landingPage.style.display = '';
+                                    }, 1000);
+                                }, 300);
+                            }, 2000);
+
+                            // Juga lanjut saat tombol diklik
+                            pinPopupClose.onclick = function () {
+                                closePinPopup();
+                                setTimeout(() => {
+                                    const pinScreen = document.getElementById('pin-screen');
+                                    pinScreen.classList.remove('active');
+
+                                    setTimeout(() => {
+                                        pinScreen.style.display = 'none';
+                                        const landingPage = document.getElementById('landing-page');
+                                        if (landingPage) landingPage.style.display = '';
+                                    }, 1000);
+                                }, 300);
+                            };
                         } else {
                             // PIN SALAH
-                            const msgIndex = Math.min(pinAttempt, wrongMessages.length - 1);
-                            showToast(wrongMessages[msgIndex], false);
+                            const configIndex = Math.min(pinAttempt, wrongConfigs.length - 1);
+                            showPinPopup(wrongConfigs[configIndex], false);
                             pinAttempt++;
 
                             pinInput.classList.add('shake-animation');
                             setTimeout(() => pinInput.classList.remove('shake-animation'), 400);
                             pinInput.value = '';
+
+                            // Reset tombol close ke default
+                            pinPopupClose.onclick = closePinPopup;
                         }
                     }, 150);
                 }
@@ -286,11 +388,23 @@ document.addEventListener("DOMContentLoaded", function () {
                 modalIframe.style.display = 'none'; // Sembunyikan musik sebagai default
                 modalIframe.src = ""; // Kosongkan lagu sebelumnya
 
-                // A. JIKA YANG DIKLIK ADALAH KARTU LAGU (Punya data-embed)
+                // A. JIKA YANG DIKLIK ADALAH KARTU LAGU/VIDEO (Punya data-embed)
                 if (this.classList.contains('planet-card') && this.hasAttribute('data-embed')) {
                     modalImg.style.display = 'none'; // Sembunyikan foto
-                    modalIframe.style.display = 'block'; // Tampilkan alat musik
-                    modalIframe.src = this.getAttribute('data-embed'); // Masukkan link Spotify
+                    modalIframe.style.display = 'block'; // Tampilkan alat musik/video
+                    
+                    const embedUrl = this.getAttribute('data-embed');
+                    modalIframe.src = embedUrl; // Masukkan link
+
+                    // Hapus class lama
+                    modalIframe.classList.remove('iframe-spotify', 'iframe-youtube');
+                    
+                    // Deteksi platform untuk penyesuaian rasio (16:9 untuk YouTube, Kotak untuk Spotify)
+                    if (embedUrl.includes('youtube.com') || embedUrl.includes('youtu.be')) {
+                        modalIframe.classList.add('iframe-youtube');
+                    } else if (embedUrl.includes('spotify.com')) {
+                        modalIframe.classList.add('iframe-spotify');
+                    }
 
                     const teksCaption = this.querySelector('.planet-caption').innerText;
                     if (modalCaption) modalCaption.innerText = teksCaption;
@@ -540,7 +654,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const galleryHint = document.getElementById('gallery-hint');
     const gallerySlider = document.getElementById('gallery-slider');
     const gallerySliderThumb = document.getElementById('gallery-slider-thumb');
-    
+
     const totalCanvases = canvases.length;
     const clearedSet = new Set();
     let galleryUnlocked = false;
@@ -589,18 +703,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function checkCanvasCleared(canvas, index) {
         if (clearedSet.has(index)) return;
-        
+
         const ctx = canvas.getContext('2d');
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const pixels = imageData.data;
         let transparentCount = 0;
         let sampledCount = 0;
-        
+
         for (let i = 3; i < pixels.length; i += 8) {
             sampledCount++;
             if (pixels[i] === 0) transparentCount++;
         }
-        
+
         const ratio = transparentCount / sampledCount;
         if (ratio > 0.45) {
             clearedSet.add(index);
@@ -610,7 +724,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 canvas.style.pointerEvents = 'none';
             }, 500);
-            
+
             // Update hint
             if (galleryHint) {
                 galleryHint.textContent = '✨ Foto ' + clearedSet.size + ' dari ' + totalCanvases + ' terbuka ✨';
@@ -628,7 +742,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     galleryScroll.addEventListener('scroll', updateSlider);
                 }
                 if (galleryHint) {
-                    galleryHint.textContent = '✨ Semua terbuka! Geser untuk melihat →';
+                    galleryHint.textContent = '✨ Semua terbuka! Geser untuk melihat';
                     galleryHint.classList.add('hint-unlocked');
                 }
             } else {
@@ -639,7 +753,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
-    
+
     canvases.forEach((canvas, index) => {
         const ctx = canvas.getContext('2d');
         let isDrawing = false;
@@ -666,7 +780,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             ctx.globalCompositeOperation = 'destination-out';
-            
+
             const startPosition = (e) => {
                 isDrawing = true;
                 drawMoveCount = 0;
@@ -682,7 +796,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const draw = (e) => {
                 if (!isDrawing) return;
-                
+
                 let clientX, clientY;
                 if (e.type.includes('touch')) {
                     clientX = e.touches[0].clientX;
@@ -691,7 +805,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     clientX = e.clientX;
                     clientY = e.clientY;
                 }
-                
+
                 const canvasRect = canvas.getBoundingClientRect();
                 const x = clientX - canvasRect.left;
                 const y = clientY - canvasRect.top;
@@ -714,14 +828,14 @@ document.addEventListener('DOMContentLoaded', () => {
             canvas.addEventListener('mouseup', endPosition);
             canvas.addEventListener('mousemove', draw);
             canvas.addEventListener('mouseleave', endPosition);
-            
+
             canvas.addEventListener('touchstart', startPosition, { passive: true });
             canvas.addEventListener('touchend', endPosition);
             canvas.addEventListener('touchmove', (e) => {
                 if (isDrawing) e.preventDefault();
                 draw(e);
             }, { passive: false });
-            
-        }, 500); 
+
+        }, 500);
     });
 });
