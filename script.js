@@ -561,9 +561,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!galleryScroll) return;
         const cards = galleryScroll.querySelectorAll('.scratch-card');
         if (cardIndex < cards.length) {
-            // Sementara aktifkan scroll agar scrollIntoView bisa jalan
+            const card = cards[cardIndex];
+            // Hitung posisi scroll secara manual agar card berada di tengah container
+            // Ini menghindari scrollIntoView yang bisa menggeser seluruh halaman di HP
+            const containerWidth = galleryScroll.clientWidth;
+            const cardLeft = card.offsetLeft;
+            const cardWidth = card.offsetWidth;
+            const targetScroll = cardLeft - (containerWidth / 2) + (cardWidth / 2);
+
+            // Sementara aktifkan scroll agar bisa geser
             galleryScroll.style.overflowX = 'auto';
-            cards[cardIndex].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            galleryScroll.scrollTo({ left: targetScroll, behavior: 'smooth' });
             // Kunci lagi setelah scroll selesai
             setTimeout(() => {
                 if (!galleryUnlocked) {

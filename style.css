@@ -776,6 +776,7 @@ body {
     height: 100%;
     z-index: 10;
     cursor: pointer;
+    touch-action: none;
 }
 
 /* =========================================
