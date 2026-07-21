@@ -406,7 +406,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         modalIframe.classList.add('iframe-spotify');
                     }
 
-                    const teksCaption = this.querySelector('.planet-caption').innerText;
+                    const customCaption = this.getAttribute('data-caption');
+                    const teksCaption = customCaption ? customCaption : this.querySelector('.planet-caption').innerText;
                     if (modalCaption) modalCaption.innerText = teksCaption;
                 }
                 // B. JIKA YANG DIKLIK ADALAH KARTU 3D BIASA (Bukan Lagu)
@@ -414,7 +415,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     modalImg.src = this.querySelector('img').src;
                     modalImg.style.aspectRatio = "3 / 4";
 
-                    const teksCaption = this.querySelector('.planet-caption').innerText;
+                    const customCaption = this.getAttribute('data-caption');
+                    const teksCaption = customCaption ? customCaption : this.querySelector('.planet-caption').innerText;
                     if (modalCaption) modalCaption.innerText = teksCaption;
                 }
                 // C. JIKA YANG DIKLIK ADALAH POLAROID
