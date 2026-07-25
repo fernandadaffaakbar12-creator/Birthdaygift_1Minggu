@@ -711,6 +711,7 @@ body {
 .gallery-hint.hint-unlocked {
     color: rgba(180, 255, 200, 0.9);
     animation: none;
+    font-size: 0.7rem;
 }
 
 /* Slider */
@@ -1245,7 +1246,7 @@ body {
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    background: radial-gradient(circle at center, #1a1a2e 0%, #0f0f1a 100%);
+    background: transparent;
     opacity: 0;
     transition: opacity 1s ease;
 }

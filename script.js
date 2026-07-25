@@ -392,13 +392,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (this.classList.contains('planet-card') && this.hasAttribute('data-embed')) {
                     modalImg.style.display = 'none'; // Sembunyikan foto
                     modalIframe.style.display = 'block'; // Tampilkan alat musik/video
-                    
+
                     const embedUrl = this.getAttribute('data-embed');
                     modalIframe.src = embedUrl; // Masukkan link
 
                     // Hapus class lama
                     modalIframe.classList.remove('iframe-spotify', 'iframe-youtube');
-                    
+
                     // Deteksi platform untuk penyesuaian rasio (16:9 untuk YouTube, Kotak untuk Spotify)
                     if (embedUrl.includes('youtube.com') || embedUrl.includes('youtu.be')) {
                         modalIframe.classList.add('iframe-youtube');
@@ -744,7 +744,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     galleryScroll.addEventListener('scroll', updateSlider);
                 }
                 if (galleryHint) {
-                    galleryHint.textContent = '✨ Semua terbuka! Geser untuk melihat';
+                    galleryHint.textContent = 'Semua foto sudah terbuka! Geser kesamping untuk melihatnya';
                     galleryHint.classList.add('hint-unlocked');
                 }
             } else {
