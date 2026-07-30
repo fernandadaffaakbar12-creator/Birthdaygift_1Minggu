@@ -18,7 +18,7 @@
 
     <div id="music-popup" class="music-popup">
         <p class="now-playing-top">Now Playing</p>
-        <img src="https://picsum.photos/100/100?random=20" alt="Album Cover" class="album-cover">
+        <img src="img/so.jpeg" alt="Album Cover" class="album-cover">
         <div class="music-info">
             <p class="song-title">Shape of My Heart</p>
             <p class="artist-name">Backstreet Boys</p>
@@ -161,27 +161,27 @@
             </h2>
             <div class="gallery-scroll">
                 <div class="scratch-card">
-                    <img src="img/core-memories1.jpg" alt="Kenangan 1">
+                    <img src="img/core-memories1.jpeg" alt="Kenangan 1">
                     <canvas class="scratch-canvas"></canvas>
                 </div>
                 <div class="scratch-card">
-                    <img src="img/core-memories2.jpg" alt="Kenangan 2">
+                    <img src="img/core-memories2.jpeg" alt="Kenangan 2">
                     <canvas class="scratch-canvas"></canvas>
                 </div>
                 <div class="scratch-card">
-                    <img src="img/core-memories3.jpg" alt="Kenangan 3">
+                    <img src="img/core-memories3.jpeg" alt="Kenangan 3">
                     <canvas class="scratch-canvas"></canvas>
                 </div>
                 <div class="scratch-card">
-                    <img src="img/core-memories4.jpg" alt="Kenangan 4">
+                    <img src="img/core-memories4.jpeg" alt="Kenangan 4">
                     <canvas class="scratch-canvas"></canvas>
                 </div>
                 <div class="scratch-card">
-                    <img src="img/core-memories5.jpg" alt="Kenangan 5">
+                    <img src="img/core-memories5.jpeg" alt="Kenangan 5">
                     <canvas class="scratch-canvas"></canvas>
                 </div>
                 <div class="scratch-card">
-                    <img src="img/core-memories6.jpg" alt="Kenangan 6">
+                    <img src="img/core-memories6.jpeg" alt="Kenangan 6">
                     <canvas class="scratch-canvas"></canvas>
                 </div>
             </div>
@@ -196,19 +196,19 @@
         <section class="slide photo-panel show-on-scroll">
             <div class="polaroid-grid">
                 <div class="polaroid">
-                    <img src="img/you.jpg" alt="Foto Pribadi 1">
+                    <img src="img/you.jpeg" alt="Foto Pribadi 1">
                     <p class="caption">You</p>
                 </div>
                 <div class="polaroid">
-                    <img src="img/are.jpg" alt="Foto Pribadi 2">
+                    <img src="img/are.jpeg" alt="Foto Pribadi 2">
                     <p class="caption">Are</p>
                 </div>
                 <div class="polaroid">
-                    <img src="img/so.jpg" alt="Foto Pribadi 3">
+                    <img src="img/so.jpeg" alt="Foto Pribadi 3">
                     <p class="caption">So</p>
                 </div>
                 <div class="polaroid">
-                    <img src="img/beautiful.jpg" alt="Foto Pribadi 4">
+                    <img src="img/beautiful.jpeg" alt="Foto Pribadi 4">
                     <p class="caption">Beautiful</p>
                 </div>
             </div>
@@ -233,7 +233,67 @@
             </p>
             <p class="sender-name aesthetic-font baby-pink-text" style="font-size: 2rem; margin-top: 5px;">Rayhan
             </p>
+
+            <!-- Tombol Tiup Lilin -->
+            <button id="btn-tiup-lilin" class="btn-tiup-lilin" onclick="bukaHalamanLilin()">🎂 Tiup Lilin</button>
         </section>
+
+        <!-- HALAMAN TIUP LILIN (Full Screen Overlay) -->
+        <div id="candle-page" class="candle-page">
+            <!-- Tombol Kembali -->
+            <button id="btn-back-candle" class="btn-back-candle" onclick="tutupHalamanLilin()">← Kembali</button>
+
+            <div class="candle-page-content">
+                <p id="candle-message" class="candle-message"></p>
+
+                <div class="cake-container">
+                    <!-- Lilin-lilin -->
+                    <div class="candles-row">
+                        <div class="candle-stick">
+                            <div class="candle-flame flame-1">
+                                <div class="flame-inner"></div>
+                            </div>
+                            <div class="candle-body"></div>
+                        </div>
+                        <div class="candle-stick">
+                            <div class="candle-flame flame-2">
+                                <div class="flame-inner"></div>
+                            </div>
+                            <div class="candle-body"></div>
+                        </div>
+                        <div class="candle-stick">
+                            <div class="candle-flame flame-3">
+                                <div class="flame-inner"></div>
+                            </div>
+                            <div class="candle-body"></div>
+                        </div>
+                    </div>
+
+                    <!-- Kue -->
+                    <div class="cake">
+                        <div class="cake-top"></div>
+                        <div class="cake-middle"></div>
+                        <div class="cake-bottom"></div>
+                        <div class="cake-frosting">
+                            <span></span><span></span><span></span><span></span><span></span>
+                            <span></span><span></span><span></span><span></span>
+                        </div>
+                        <div class="cake-decoration">
+                            <span>🌸</span><span>✨</span><span>🌸</span><span>✨</span><span>🌸</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress bar untuk hold -->
+                <div id="hold-progress-bar" class="hold-progress-bar">
+                    <div id="hold-progress-fill" class="hold-progress-fill"></div>
+                </div>
+
+                <button id="btn-mulai-tiup" class="btn-mulai-tiup" onclick="mulaiTiupLilin()">Mulai Tiup Lilin</button>
+                <p id="tap-hint" class="tap-hint"></p>
+            </div>
+        </div>
+
         <div id="image-modal" onclick="tutupModal()">
             <img id="modal-img" src="" alt="Foto Diperbesar">
 

@@ -841,3 +841,338 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 500);
     });
 });
+
+// ==========================================
+// FITUR TIUP LILIN 🎂 (Press & Hold)
+// ==========================================
+let holdTime = 0;
+let holdInterval = null;
+let holdCurrentStage = 0;
+let holdListenersAttached = false;
+let holdStartFn = null;
+let holdStopFn = null;
+
+const STAGE_1_DURATION = 6000;  // 6 detik untuk tahap 1
+const STAGE_2_DURATION = 13000; // 13 detik total (7 detik tambahan) untuk tahap 2
+
+function bukaHalamanLilin() {
+    const candlePage = document.getElementById('candle-page');
+    if (!candlePage) return;
+
+    // Reset state
+    holdTime = 0;
+    holdCurrentStage = 0;
+    holdListenersAttached = false;
+
+    // Tampilkan halaman
+    candlePage.classList.add('active');
+
+    // Buat sparkle background
+    buatSparkleBackground(candlePage);
+
+    // Fade in
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            candlePage.classList.add('visible');
+        });
+    });
+}
+
+function tutupHalamanLilin() {
+    const candlePage = document.getElementById('candle-page');
+    const msg = document.getElementById('candle-message');
+    const btn = document.getElementById('btn-mulai-tiup');
+    const tapHint = document.getElementById('tap-hint');
+    const flames = document.querySelectorAll('.candle-flame');
+    const progressBar = document.getElementById('hold-progress-bar');
+    const progressFill = document.getElementById('hold-progress-fill');
+    const cakeContainer = document.querySelector('.cake-container');
+
+    if (!candlePage) return;
+
+    // Stop hold interval
+    if (holdInterval) {
+        clearInterval(holdInterval);
+        holdInterval = null;
+    }
+
+    // Hapus event listeners
+    hapusHoldListeners(candlePage);
+
+    // Fade out
+    candlePage.classList.remove('visible');
+
+    setTimeout(() => {
+        candlePage.classList.remove('active');
+
+        // Reset semua state
+        holdTime = 0;
+        holdCurrentStage = 0;
+
+        if (msg) {
+            msg.textContent = '';
+            msg.className = 'candle-message';
+        }
+
+        if (btn) btn.classList.remove('hidden-btn');
+
+        if (tapHint) {
+            tapHint.textContent = '';
+            tapHint.className = 'tap-hint';
+        }
+
+        if (progressBar) progressBar.classList.remove('show-bar');
+        if (progressFill) progressFill.style.width = '0%';
+        if (cakeContainer) cakeContainer.classList.remove('holding');
+
+        // Reset api lilin
+        flames.forEach(flame => {
+            flame.classList.remove('dimming', 'extinguished');
+            flame.style.animationDuration = '';
+        });
+
+        // Hapus sparkle elements
+        const sparkles = candlePage.querySelectorAll('.candle-sparkle');
+        sparkles.forEach(s => s.remove());
+    }, 800);
+}
+
+function hapusHoldListeners(candlePage) {
+    if (holdListenersAttached && holdStartFn && holdStopFn) {
+        candlePage.removeEventListener('mousedown', holdStartFn);
+        candlePage.removeEventListener('mouseup', holdStopFn);
+        candlePage.removeEventListener('mouseleave', holdStopFn);
+        candlePage.removeEventListener('touchstart', holdStartFn);
+        candlePage.removeEventListener('touchend', holdStopFn);
+        candlePage.removeEventListener('touchcancel', holdStopFn);
+        holdListenersAttached = false;
+    }
+}
+
+function buatSparkleBackground(container) {
+    for (let i = 0; i < 30; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.classList.add('candle-sparkle');
+        sparkle.style.left = Math.random() * 100 + '%';
+        sparkle.style.top = Math.random() * 100 + '%';
+        sparkle.style.animationDelay = (Math.random() * 3) + 's';
+        sparkle.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+        container.appendChild(sparkle);
+    }
+}
+
+function mulaiTiupLilin() {
+    const btn = document.getElementById('btn-mulai-tiup');
+    const tapHint = document.getElementById('tap-hint');
+    const candlePage = document.getElementById('candle-page');
+    const progressBar = document.getElementById('hold-progress-bar');
+
+    if (!btn || !candlePage) return;
+
+    // Sembunyikan tombol
+    btn.classList.add('hidden-btn');
+
+    // Tampilkan progress bar & hint
+    if (progressBar) progressBar.classList.add('show-bar');
+    if (tapHint) {
+        tapHint.textContent = 'Tekan dan tahan layar untuk meniup lilin';
+        tapHint.className = 'tap-hint show-hint';
+    }
+
+    // Reset hold state
+    holdTime = 0;
+    holdCurrentStage = 0;
+
+    // Setup hold event listeners
+    holdStartFn = function (e) {
+        // Jangan proses jika klik tombol kembali
+        if (e.target.closest('.btn-back-candle')) return;
+        // Jangan proses jika sudah selesai
+        if (holdCurrentStage >= 3) return;
+
+        e.preventDefault();
+        startHolding();
+    };
+
+    holdStopFn = function () {
+        if (holdCurrentStage >= 3) return;
+        stopHolding();
+    };
+
+    candlePage.addEventListener('mousedown', holdStartFn);
+    candlePage.addEventListener('mouseup', holdStopFn);
+    candlePage.addEventListener('mouseleave', holdStopFn);
+    candlePage.addEventListener('touchstart', holdStartFn, { passive: false });
+    candlePage.addEventListener('touchend', holdStopFn);
+    candlePage.addEventListener('touchcancel', holdStopFn);
+    holdListenersAttached = true;
+}
+
+function startHolding() {
+    const cakeContainer = document.querySelector('.cake-container');
+    const tapHint = document.getElementById('tap-hint');
+
+    if (cakeContainer) cakeContainer.classList.add('holding');
+    if (tapHint) tapHint.className = 'tap-hint'; // Sembunyikan hint saat menekan
+
+    // Jika belum masuk tahap 1, langsung masuk
+    if (holdCurrentStage === 0) {
+        holdCurrentStage = 1;
+        tampilkanTahap1();
+    }
+
+    // Mulai interval untuk menambah holdTime
+    if (holdInterval) clearInterval(holdInterval);
+    holdInterval = setInterval(() => {
+        holdTime += 50;
+        updateProgress();
+        cekTransisiTahap();
+    }, 50);
+}
+
+function stopHolding() {
+    const cakeContainer = document.querySelector('.cake-container');
+    const tapHint = document.getElementById('tap-hint');
+
+    if (cakeContainer) cakeContainer.classList.remove('holding');
+
+    // Stop interval
+    if (holdInterval) {
+        clearInterval(holdInterval);
+        holdInterval = null;
+    }
+
+    // Tampilkan hint untuk menekan lagi (jika belum selesai)
+    if (holdCurrentStage > 0 && holdCurrentStage < 3 && tapHint) {
+        tapHint.textContent = '🌬️ Tekan dan tahan lagi untuk melanjutkan';
+        tapHint.className = 'tap-hint show-hint';
+    }
+}
+
+function updateProgress() {
+    const progressFill = document.getElementById('hold-progress-fill');
+    if (!progressFill) return;
+
+    const percent = Math.min((holdTime / STAGE_2_DURATION) * 100, 100);
+    progressFill.style.width = percent + '%';
+}
+
+function cekTransisiTahap() {
+    // Transisi dari tahap 1 ke tahap 2
+    if (holdCurrentStage === 1 && holdTime >= STAGE_1_DURATION) {
+        holdCurrentStage = 2;
+        tampilkanTahap2();
+    }
+
+    // Transisi dari tahap 2 ke tahap 3 (selesai)
+    if (holdCurrentStage === 2 && holdTime >= STAGE_2_DURATION) {
+        holdCurrentStage = 3;
+        stopHolding();
+        tampilkanTahap3();
+    }
+}
+
+function tampilkanTahap1() {
+    const msg = document.getElementById('candle-message');
+    const flames = document.querySelectorAll('.candle-flame');
+
+    if (msg) {
+        msg.textContent = 'Lilin mulai ditiup...';
+        msg.className = 'candle-message show-msg';
+    }
+
+    // Api bergoyang lebih kencang tapi belum mati
+    flames.forEach(flame => {
+        flame.style.animationDuration = '0.15s';
+    });
+}
+
+function tampilkanTahap2() {
+    const msg = document.getElementById('candle-message');
+    const flames = document.querySelectorAll('.candle-flame');
+
+    if (msg) {
+        msg.className = 'candle-message'; // fade out dulu
+        setTimeout(() => {
+            msg.textContent = 'Make a wish, Berdoa dulu yaa 🙏 ';
+            msg.className = 'candle-message show-msg';
+        }, 400);
+    }
+
+    // Api mulai redup
+    flames.forEach(flame => {
+        flame.classList.add('dimming');
+    });
+}
+
+function tampilkanTahap3() {
+    const msg = document.getElementById('candle-message');
+    const tapHint = document.getElementById('tap-hint');
+    const flames = document.querySelectorAll('.candle-flame');
+    const candlePage = document.getElementById('candle-page');
+    const progressBar = document.getElementById('hold-progress-bar');
+
+    // Sembunyikan hint & progress
+    if (tapHint) {
+        tapHint.textContent = '';
+        tapHint.className = 'tap-hint';
+    }
+    if (progressBar) {
+        setTimeout(() => { progressBar.classList.remove('show-bar'); }, 500);
+    }
+
+    // Fade out pesan sebelumnya
+    if (msg) msg.className = 'candle-message';
+
+    // Matikan api satu per satu
+    flames.forEach((flame, index) => {
+        setTimeout(() => {
+            flame.classList.remove('dimming');
+            flame.classList.add('extinguished');
+        }, index * 400);
+    });
+
+    // Setelah semua api mati
+    setTimeout(() => {
+        buatConfetti();
+
+        setTimeout(() => {
+            if (msg) {
+                msg.textContent = '🤍 Semoga apa yang kamu doakan dan inginkan segera terlaksana yaa, Aamiin 🤍';
+                msg.className = 'candle-message show-msg final-msg';
+            }
+        }, 600);
+    }, flames.length * 400 + 500);
+
+    // Hapus event listeners karena sudah selesai
+    if (candlePage) hapusHoldListeners(candlePage);
+}
+
+function buatConfetti() {
+    const colors = ['#ff6b81', '#ffb6c1', '#a55eea', '#6c5ce7', '#ffd700', '#ff9ff3', '#f368e0', '#ffffff'];
+    const shapes = ['circle', 'rect'];
+
+    for (let i = 0; i < 60; i++) {
+        const confetti = document.createElement('div');
+        confetti.classList.add('confetti-piece');
+
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const shape = shapes[Math.floor(Math.random() * shapes.length)];
+        const size = 6 + Math.random() * 8;
+
+        confetti.style.width = size + 'px';
+        confetti.style.height = shape === 'rect' ? (size * 0.6) + 'px' : size + 'px';
+        confetti.style.background = color;
+        confetti.style.borderRadius = shape === 'circle' ? '50%' : '2px';
+        confetti.style.left = (20 + Math.random() * 60) + 'vw';
+        confetti.style.top = '-10px';
+        confetti.style.animationDuration = (2 + Math.random() * 2) + 's';
+        confetti.style.animationDelay = (Math.random() * 0.8) + 's';
+
+        document.body.appendChild(confetti);
+
+        setTimeout(() => {
+            confetti.remove();
+        }, 5000);
+    }
+}

@@ -753,7 +753,7 @@ body {
     position: relative;
     flex: 0 0 auto;
     width: 220px;
-    aspect-ratio: 9 / 16;
+    aspect-ratio: 3 / 4;
     border-radius: 10px;
     border: 2px solid rgba(255, 255, 255, 0.3) !important;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5) !important;
@@ -1519,4 +1519,513 @@ body {
 .click-text {
     opacity: 0;
     animation: bouquetFadeIn 1.5s ease-out 0.8s forwards;
+}
+
+/* =========================================
+   TOMBOL TIUP LILIN
+========================================= */
+.btn-tiup-lilin {
+    display: inline-block;
+    margin-top: 30px;
+    padding: 14px 36px;
+    font-family: 'Caveat', cursive;
+    font-size: 1.5rem;
+    color: #fff;
+    background: linear-gradient(135deg, #ff7eb3, #ff758c, #ff6a88);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    box-shadow: 0 4px 20px rgba(255, 126, 179, 0.4), 0 0 30px rgba(255, 126, 179, 0.15);
+    animation: candleBtnPulse 2.5s ease-in-out infinite;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-tiup-lilin::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+    transform: rotate(45deg);
+    animation: shimmerBtn 3s ease-in-out infinite;
+}
+
+.btn-tiup-lilin:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 30px rgba(255, 126, 179, 0.6), 0 0 50px rgba(255, 126, 179, 0.25);
+}
+
+@keyframes candleBtnPulse {
+    0%, 100% { box-shadow: 0 4px 20px rgba(255, 126, 179, 0.4), 0 0 30px rgba(255, 126, 179, 0.15); }
+    50% { box-shadow: 0 4px 30px rgba(255, 126, 179, 0.6), 0 0 50px rgba(255, 126, 179, 0.3); }
+}
+
+@keyframes shimmerBtn {
+    0% { transform: translateX(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) rotate(45deg); }
+}
+
+/* =========================================
+   HALAMAN TIUP LILIN (FULL SCREEN OVERLAY)
+========================================= */
+.candle-page {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 99990;
+    background: radial-gradient(ellipse at center bottom, #1a0a2e 0%, #0d0521 40%, #050210 80%, #000005 100%);
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    overflow-y: auto;
+}
+
+.candle-page.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.candle-page.visible {
+    opacity: 1;
+}
+
+.candle-page-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100%;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+/* Pesan di atas kue */
+.candle-message {
+    font-family: 'Caveat', cursive;
+    font-size: 1.6rem;
+    color: #ffb6c1;
+    text-shadow: 0 0 15px rgba(255, 182, 193, 0.5);
+    margin-bottom: 30px;
+    min-height: 60px;
+    opacity: 0;
+    transform: translateY(-15px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+    line-height: 1.4;
+    max-width: 340px;
+}
+
+.candle-message.show-msg {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* =========================================
+   BIRTHDAY CAKE (CSS Art)
+========================================= */
+.cake-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.candles-row {
+    display: flex;
+    gap: 28px;
+    justify-content: center;
+    align-items: flex-end;
+    margin-bottom: -2px;
+    z-index: 2;
+    position: relative;
+}
+
+.candle-stick {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.candle-body {
+    width: 12px;
+    height: 50px;
+    background: linear-gradient(180deg, #ff9ecf, #e876a8);
+    border-radius: 2px 2px 0 0;
+    position: relative;
+    box-shadow: inset -2px 0 4px rgba(0,0,0,0.15);
+}
+
+.candle-body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 8px;
+    background: #333;
+    border-radius: 1px;
+}
+
+/* API LILIN (FLAME) */
+.candle-flame {
+    width: 14px;
+    height: 28px;
+    position: relative;
+    margin-bottom: -3px;
+    z-index: 3;
+    transition: opacity 1.5s ease, transform 1.5s ease;
+}
+
+.candle-flame::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 14px;
+    height: 28px;
+    background: radial-gradient(ellipse at bottom, #ffd700, #ff8c00 40%, #ff4500 70%, transparent 100%);
+    border-radius: 50% 50% 30% 30%;
+    animation: flicker 0.3s ease-in-out infinite alternate;
+    box-shadow: 0 0 12px 4px rgba(255, 165, 0, 0.5), 0 0 30px 8px rgba(255, 100, 0, 0.2);
+}
+
+.candle-flame .flame-inner {
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 14px;
+    background: radial-gradient(ellipse at bottom, #ffffee, #ffec8b 60%, transparent 100%);
+    border-radius: 50% 50% 30% 30%;
+    animation: flickerInner 0.25s ease-in-out infinite alternate;
+    z-index: 1;
+}
+
+/* Delay berbeda untuk setiap api lilin */
+.flame-1::before { animation-delay: 0s; }
+.flame-2::before { animation-delay: 0.1s; }
+.flame-3::before { animation-delay: 0.2s; }
+
+/* State: api redup */
+.candle-flame.dimming {
+    filter: brightness(0.5);
+    transform: scale(0.7);
+}
+
+.candle-flame.dimming::before {
+    box-shadow: 0 0 6px 2px rgba(255, 165, 0, 0.25), 0 0 15px 4px rgba(255, 100, 0, 0.1);
+}
+
+/* State: api mati */
+.candle-flame.extinguished {
+    opacity: 0;
+    transform: scale(0) translateY(-10px);
+}
+
+/* Asap setelah api mati */
+.candle-flame.extinguished::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 20px;
+    background: linear-gradient(to top, rgba(180, 180, 180, 0.4), transparent);
+    border-radius: 50%;
+    animation: smokeRise 2s ease-out forwards;
+}
+
+@keyframes flicker {
+    0% { transform: translateX(-50%) scaleY(1) scaleX(1) rotate(-2deg); }
+    50% { transform: translateX(-50%) scaleY(1.1) scaleX(0.95) rotate(1deg); }
+    100% { transform: translateX(-50%) scaleY(0.95) scaleX(1.05) rotate(-1deg); }
+}
+
+@keyframes flickerInner {
+    0% { transform: translateX(-50%) scaleY(1); }
+    100% { transform: translateX(-50%) scaleY(1.15) scaleX(0.9); }
+}
+
+@keyframes smokeRise {
+    0% { opacity: 0.5; transform: translateX(-50%) translateY(0); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-30px); }
+}
+
+/* KUE */
+.cake {
+    position: relative;
+    width: 200px;
+}
+
+.cake-top {
+    width: 200px;
+    height: 18px;
+    background: linear-gradient(180deg, #ffb6c1, #ff8fa3);
+    border-radius: 8px 8px 0 0;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 -2px 8px rgba(255, 182, 193, 0.3);
+}
+
+.cake-middle {
+    width: 200px;
+    height: 55px;
+    background: linear-gradient(180deg, #f8e0e6, #f0c8d0);
+    position: relative;
+    border-left: 3px solid rgba(255,255,255,0.1);
+    border-right: 3px solid rgba(0,0,0,0.05);
+}
+
+.cake-bottom {
+    width: 200px;
+    height: 55px;
+    background: linear-gradient(180deg, #e8a0b0, #d68898);
+    border-radius: 0 0 8px 8px;
+    position: relative;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    border-left: 3px solid rgba(255,255,255,0.1);
+    border-right: 3px solid rgba(0,0,0,0.05);
+}
+
+/* Frosting drips */
+.cake-frosting {
+    position: absolute;
+    top: 15px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    z-index: 2;
+}
+
+.cake-frosting span {
+    display: block;
+    width: 16px;
+    height: 22px;
+    background: linear-gradient(180deg, #ffb6c1, #ff9eaf);
+    border-radius: 0 0 50% 50%;
+    animation: frostDrip 3s ease-in-out infinite alternate;
+}
+
+.cake-frosting span:nth-child(even) {
+    height: 28px;
+    animation-delay: 0.5s;
+}
+
+@keyframes frostDrip {
+    0% { transform: scaleY(1); }
+    100% { transform: scaleY(1.15); }
+}
+
+/* Dekorasi */
+.cake-decoration {
+    position: absolute;
+    bottom: 60px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    padding: 0 10px;
+    font-size: 0.8rem;
+}
+
+/* Glow di sekitar kue */
+.cake-container::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 250px;
+    height: 60px;
+    background: radial-gradient(ellipse, rgba(255, 182, 193, 0.15), transparent 70%);
+    border-radius: 50%;
+    z-index: 0;
+}
+
+/* =========================================
+   TOMBOL MULAI TIUP LILIN
+========================================= */
+.btn-mulai-tiup {
+    display: inline-block;
+    margin-top: 40px;
+    padding: 14px 36px;
+    font-family: 'Caveat', cursive;
+    font-size: 1.4rem;
+    color: #fff;
+    background: linear-gradient(135deg, #6c5ce7, #a55eea, #ff6b81);
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    box-shadow: 0 4px 20px rgba(108, 92, 231, 0.4);
+    animation: tiupBtnGlow 2s ease-in-out infinite;
+}
+
+.btn-mulai-tiup:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 30px rgba(108, 92, 231, 0.6);
+}
+
+.btn-mulai-tiup.hidden-btn {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px);
+    transition: all 0.5s ease;
+}
+
+@keyframes tiupBtnGlow {
+    0%, 100% { box-shadow: 0 4px 20px rgba(108, 92, 231, 0.4); }
+    50% { box-shadow: 0 4px 30px rgba(108, 92, 231, 0.7), 0 0 40px rgba(255, 107, 129, 0.2); }
+}
+
+/* =========================================
+   CONFETTI BURST (setelah lilin mati)
+========================================= */
+.confetti-piece {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    z-index: 99995;
+    pointer-events: none;
+    animation: confettiFall linear forwards;
+}
+
+@keyframes confettiFall {
+    0% {
+        opacity: 1;
+        transform: translateY(0) rotate(0deg) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(100vh) rotate(720deg) scale(0.5);
+    }
+}
+
+/* Pesan akhir yang spesial */
+.candle-message.final-msg {
+    font-size: 1.3rem;
+    color: #ffffff;
+    text-shadow: 0 0 20px rgba(255, 182, 193, 0.6), 0 0 40px rgba(255, 182, 193, 0.3);
+    max-width: 320px;
+    line-height: 1.6;
+}
+
+/* =========================================
+   CANDLE PAGE BACKGROUND SPARKLES
+========================================= */
+.candle-page .candle-sparkle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    animation: candleSparkle 2s ease-in-out infinite;
+}
+
+@keyframes candleSparkle {
+    0%, 100% { opacity: 0.2; transform: scale(0.5); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* =========================================
+   TOMBOL KEMBALI (CANDLE PAGE)
+========================================= */
+.btn-back-candle {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 99995;
+    padding: 10px 20px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-back-candle:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    transform: translateX(-50%) scale(1.05);
+    border-color: rgba(255, 182, 193, 0.4);
+}
+
+/* =========================================
+   TAP HINT (Ketuk layar untuk lanjut)
+========================================= */
+.tap-hint {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 15px;
+    margin-bottom: 60px;
+    min-height: 20px;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.tap-hint.show-hint {
+    opacity: 1;
+    animation: tapPulse 2s ease-in-out infinite;
+}
+
+@keyframes tapPulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+}
+
+/* =========================================
+   HOLD PROGRESS BAR
+========================================= */
+.hold-progress-bar {
+    width: 200px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    margin-top: 20px;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.hold-progress-bar.show-bar {
+    opacity: 1;
+}
+
+.hold-progress-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #ff7eb3, #ff758c, #ffd700);
+    border-radius: 3px;
+    transition: width 0.05s linear;
+    box-shadow: 0 0 8px rgba(255, 126, 179, 0.6);
+}
+
+/* Visual feedback saat menekan kue */
+.cake-container.holding {
+    transform: scale(0.97);
+    transition: transform 0.2s ease;
+}
+
+.cake-container:not(.holding) {
+    transform: scale(1);
+    transition: transform 0.3s ease;
 }
