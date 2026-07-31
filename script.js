@@ -175,7 +175,7 @@
         const pinPopupClose = document.getElementById('pin-popup-close');
 
         // DEFAULT PIN: Silakan ubah angka ini jika ingin PIN lain
-        const SECRET_PIN = "1024";
+        const SECRET_PIN = "1705";
 
         let pinAttempt = 0;
         let popupTimeout = null;
@@ -397,13 +397,15 @@ document.addEventListener("DOMContentLoaded", function () {
                     modalIframe.src = embedUrl; // Masukkan link
 
                     // Hapus class lama
-                    modalIframe.classList.remove('iframe-spotify', 'iframe-youtube');
+                    modalIframe.classList.remove('iframe-spotify', 'iframe-youtube', 'iframe-facebook');
 
-                    // Deteksi platform untuk penyesuaian rasio (16:9 untuk YouTube, Kotak untuk Spotify)
+                    // Deteksi platform untuk penyesuaian rasio (16:9 untuk YouTube, Kotak untuk Spotify, 9:16 untuk Facebook)
                     if (embedUrl.includes('youtube.com') || embedUrl.includes('youtu.be')) {
                         modalIframe.classList.add('iframe-youtube');
                     } else if (embedUrl.includes('spotify.com')) {
                         modalIframe.classList.add('iframe-spotify');
+                    } else if (embedUrl.includes('facebook.com')) {
+                        modalIframe.classList.add('iframe-facebook');
                     }
 
                     const customCaption = this.getAttribute('data-caption');
@@ -1138,7 +1140,7 @@ function tampilkanTahap3() {
 
         setTimeout(() => {
             if (msg) {
-                msg.textContent = '🤍 Semoga apa yang kamu doakan dan inginkan segera terlaksana yaa, Aamiin 🤍';
+                msg.textContent = 'Semoga apa yang kamu doakan dan inginkan segera terlaksana yaa, Aamiin 🤍';
                 msg.className = 'candle-message show-msg final-msg';
             }
         }, 600);

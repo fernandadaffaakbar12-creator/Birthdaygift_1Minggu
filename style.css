@@ -625,6 +625,13 @@ body {
     height: auto; /* Tinggi otomatis menyesuaikan aspect ratio */
 }
 
+/* Rasio khusus untuk Facebook (9:16 Portrait untuk Reels) */
+#modal-iframe.iframe-facebook {
+    width: 267px;
+    height: 476px;
+    max-height: 80vh;
+}
+
 #image-modal.show-modal #modal-iframe {
     transform: scale(1);
 }
@@ -753,7 +760,7 @@ body {
     position: relative;
     flex: 0 0 auto;
     width: 220px;
-    aspect-ratio: 3 / 4;
+    aspect-ratio: 9 / 16;
     border-radius: 10px;
     border: 2px solid rgba(255, 255, 255, 0.3) !important;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5) !important;
