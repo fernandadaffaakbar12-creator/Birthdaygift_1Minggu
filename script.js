@@ -1149,30 +1149,73 @@ function tampilkanTahap3() {
 }
 
 function buatConfetti() {
-    const colors = ['#ff6b81', '#ffb6c1', '#a55eea', '#6c5ce7', '#ffd700', '#ff9ff3', '#f368e0', '#ffffff'];
-    const shapes = ['circle', 'rect'];
+    const colors = [
+        '#ff6b81', '#ffb6c1', '#a55eea', '#6c5ce7', '#ffd700',
+        '#ff9ff3', '#f368e0', '#ffffff', '#00d2d3', '#ff6348',
+        '#7bed9f', '#ffa502', '#ff4757', '#2ed573', '#eccc68',
+        '#ff7eb3', '#c56cf0', '#17c0eb', '#ffc312'
+    ];
+    const shapes = ['circle', 'rect', 'star', 'heart', 'ribbon'];
+    const animStyles = ['', 'confetti-swirl', 'confetti-zigzag'];
 
-    for (let i = 0; i < 60; i++) {
-        const confetti = document.createElement('div');
-        confetti.classList.add('confetti-piece');
+    function burstWave(count, delayBase) {
+        for (let i = 0; i < count; i++) {
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti-piece');
 
-        const color = colors[Math.floor(Math.random() * colors.length)];
-        const shape = shapes[Math.floor(Math.random() * shapes.length)];
-        const size = 6 + Math.random() * 8;
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const shape = shapes[Math.floor(Math.random() * shapes.length)];
+            const animStyle = animStyles[Math.floor(Math.random() * animStyles.length)];
+            const size = 5 + Math.random() * 10;
 
-        confetti.style.width = size + 'px';
-        confetti.style.height = shape === 'rect' ? (size * 0.6) + 'px' : size + 'px';
-        confetti.style.background = color;
-        confetti.style.borderRadius = shape === 'circle' ? '50%' : '2px';
-        confetti.style.left = (20 + Math.random() * 60) + 'vw';
-        confetti.style.top = '-10px';
-        confetti.style.animationDuration = (2 + Math.random() * 2) + 's';
-        confetti.style.animationDelay = (Math.random() * 0.8) + 's';
+            if (animStyle) confetti.classList.add(animStyle);
 
-        document.body.appendChild(confetti);
+            if (shape === 'star') {
+                confetti.classList.add('confetti-star');
+                confetti.textContent = '⭐';
+                confetti.style.fontSize = (10 + Math.random() * 8) + 'px';
+            } else if (shape === 'heart') {
+                confetti.classList.add('confetti-heart');
+                confetti.textContent = '💖';
+                confetti.style.fontSize = (8 + Math.random() * 8) + 'px';
+            } else if (shape === 'ribbon') {
+                confetti.classList.add('confetti-ribbon');
+                confetti.style.width = (3 + Math.random() * 4) + 'px';
+                confetti.style.height = (14 + Math.random() * 12) + 'px';
+                confetti.style.background = color;
+                confetti.style.borderRadius = '1px';
+            } else if (shape === 'rect') {
+                confetti.style.width = size + 'px';
+                confetti.style.height = (size * 0.5) + 'px';
+                confetti.style.background = color;
+                confetti.style.borderRadius = '2px';
+            } else {
+                confetti.style.width = size + 'px';
+                confetti.style.height = size + 'px';
+                confetti.style.background = color;
+                confetti.style.borderRadius = '50%';
+            }
 
-        setTimeout(() => {
-            confetti.remove();
-        }, 5000);
+            // Wider spread across the entire screen
+            confetti.style.left = (5 + Math.random() * 90) + 'vw';
+            confetti.style.top = '-15px';
+            confetti.style.animationDuration = (2.5 + Math.random() * 3) + 's';
+            confetti.style.animationDelay = (delayBase + Math.random() * 1.2) + 's';
+
+            document.body.appendChild(confetti);
+
+            setTimeout(() => {
+                confetti.remove();
+            }, 8000 + delayBase * 1000);
+        }
     }
+
+    // Gelombang 1: Ledakan utama
+    burstWave(60, 0);
+
+    // Gelombang 2: Ledakan kedua setelah 0.8 detik
+    setTimeout(() => burstWave(50, 0), 800);
+
+    // Gelombang 3: Hujan confetti lanjutan
+    setTimeout(() => burstWave(40, 0), 2000);
 }
