@@ -175,7 +175,7 @@
         const pinPopupClose = document.getElementById('pin-popup-close');
 
         // DEFAULT PIN: Silakan ubah angka ini jika ingin PIN lain
-        const SECRET_PIN = "1225";
+        const SECRET_PIN = "2104";
 
         let pinAttempt = 0;
         let popupTimeout = null;
@@ -766,7 +766,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         setTimeout(() => {
             canvas.width = 220;
-            canvas.height = Math.round(220 * 2 / 3);
+            canvas.height = Math.round(220 * 16 / 9);
 
             ctx.fillStyle = '#0a0a0a';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -811,8 +811,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 const canvasRect = canvas.getBoundingClientRect();
-                const x = clientX - canvasRect.left;
-                const y = clientY - canvasRect.top;
+                // Scale koordinat dari ukuran tampilan CSS ke ukuran internal canvas
+                const scaleX = canvas.width / canvasRect.width;
+                const scaleY = canvas.height / canvasRect.height;
+                const x = (clientX - canvasRect.left) * scaleX;
+                const y = (clientY - canvasRect.top) * scaleY;
 
                 ctx.lineWidth = brushRadius * 2;
                 ctx.lineCap = 'round';
