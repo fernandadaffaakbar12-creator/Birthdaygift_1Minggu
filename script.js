@@ -175,7 +175,7 @@
         const pinPopupClose = document.getElementById('pin-popup-close');
 
         // DEFAULT PIN: Silakan ubah angka ini jika ingin PIN lain
-        const SECRET_PIN = "2104";
+        const SECRET_PIN = "0121";
 
         let pinAttempt = 0;
         let popupTimeout = null;
@@ -383,7 +383,7 @@ document.addEventListener("DOMContentLoaded", function () {
             foto.addEventListener('click', function () {
 
                 // Reset layar setiap kali diklik
-                if (modalCaption) modalCaption.innerText = "";
+                if (modalCaption) modalCaption.innerHTML = "";
                 modalImg.style.display = 'block'; // Tampilkan foto sebagai default
                 modalIframe.style.display = 'none'; // Sembunyikan musik sebagai default
                 modalIframe.src = ""; // Kosongkan lagu sebelumnya
@@ -410,7 +410,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     const customCaption = this.getAttribute('data-caption');
                     const teksCaption = customCaption ? customCaption : this.querySelector('.planet-caption').innerText;
-                    if (modalCaption) modalCaption.innerText = teksCaption;
+                    if (modalCaption) modalCaption.innerHTML = teksCaption;
                 }
                 // B. JIKA YANG DIKLIK ADALAH KARTU 3D BIASA (Bukan Lagu)
                 else if (this.classList.contains('planet-card')) {
@@ -419,7 +419,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     const customCaption = this.getAttribute('data-caption');
                     const teksCaption = customCaption ? customCaption : this.querySelector('.planet-caption').innerText;
-                    if (modalCaption) modalCaption.innerText = teksCaption;
+                    if (modalCaption) modalCaption.innerHTML = teksCaption;
                 }
                 // C. JIKA YANG DIKLIK ADALAH POLAROID
                 else if (this.classList.contains('polaroid')) {
