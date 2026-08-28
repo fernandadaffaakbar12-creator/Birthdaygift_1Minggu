@@ -1,166 +1,125 @@
 // ==========================================
-// 0. ANIMASI LOADING "I LOVE YOU" MEMBENTUK HATI
+// 0. ANIMASI LOADING LUAR ANGKASA
 // ==========================================
 (function () {
-    const PARTICLE_COUNT = 80;
-    const LOVE_TEXTS = ['I love you', 'i love u', 'love', 'ily', '♡', 'luv u', 'sayang', 'cinta'];
-
-    // Parametric heart shape formula
-    function heartX(t) {
-        return 16 * Math.pow(Math.sin(t), 3);
-    }
-    function heartY(t) {
-        return -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
-    }
-
     function mulaiAnimasiLoading() {
-        const container = document.getElementById('love-particles-container');
-        const loadingScreen = document.getElementById('love-loading-screen');
+        const loadingScreen = document.getElementById('space-loading-screen');
+        const canvas = document.getElementById('space-canvas');
         const tapText = document.getElementById('loading-tap-text');
-        if (!container || !loadingScreen) return;
+        const loadingBarFill = document.getElementById('loading-bar-fill');
+        if (!loadingScreen || !canvas) return;
 
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
-        const centerX = vw / 2;
-        const centerY = vh / 2;
-        const scale = Math.min(vw, vh) * 0.018;
+        const ctx = canvas.getContext('2d');
+        let animationId;
 
-        const particles = [];
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
 
-        // Generate heart shape target positions (relative to center)
-        const heartPoints = [];
-        for (let i = 0; i < PARTICLE_COUNT; i++) {
-            const t = (i / PARTICLE_COUNT) * Math.PI * 2;
-            heartPoints.push({
-                x: heartX(t) * scale,
-                y: heartY(t) * scale - 20
+        // === STARFIELD ===
+        const STAR_COUNT = 200;
+        const stars = [];
+        for (let i = 0; i < STAR_COUNT; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 1.8 + 0.2,
+                baseAlpha: 0.3 + Math.random() * 0.7,
+                twinkleSpeed: 0.5 + Math.random() * 2,
+                twinkleOffset: Math.random() * Math.PI * 2,
+                color: Math.random() > 0.8
+                    ? `hsl(${220 + Math.random() * 40}, 70%, 85%)`
+                    : `hsl(0, 0%, ${80 + Math.random() * 20}%)`
             });
         }
 
-        // Build all particles in a document fragment (single DOM insert)
-        const fragment = document.createDocumentFragment();
-
-        for (let i = 0; i < PARTICLE_COUNT; i++) {
-            const el = document.createElement('span');
-            el.classList.add('love-particle');
-            el.textContent = LOVE_TEXTS[Math.floor(Math.random() * LOVE_TEXTS.length)];
-
-            const fontSize = 8 + Math.random() * 6;
-            el.style.fontSize = fontSize + 'px';
-
-            // All particles start at center, use transform for positioning
-            el.style.left = centerX + 'px';
-            el.style.top = centerY + 'px';
-
-            // Scatter offset from center (bottom area)
-            const scatterX = -centerX + Math.random() * vw;
-            const scatterY = vh * 0.1 + Math.random() * vh * 0.4;
-            const rotation = -30 + Math.random() * 60;
-
-            // Random color
-            const colors = [
-                'rgba(255, 182, 193, 0.9)',
-                'rgba(255, 150, 180, 0.85)',
-                'rgba(255, 200, 220, 0.8)',
-                'rgba(220, 160, 255, 0.7)',
-                'rgba(255, 255, 255, 0.6)',
-                'rgba(255, 130, 170, 0.9)'
-            ];
-            el.style.color = colors[Math.floor(Math.random() * colors.length)];
-
-            fragment.appendChild(el);
-            particles.push({
-                el: el,
-                scatterX: scatterX,
-                scatterY: scatterY,
-                rotation: rotation,
-                heartX: heartPoints[i].x,
-                heartY: heartPoints[i].y
+        function drawStars(time) {
+            stars.forEach(s => {
+                const alpha = s.baseAlpha * (0.5 + 0.5 * Math.sin(time * 0.001 * s.twinkleSpeed + s.twinkleOffset));
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+                ctx.fillStyle = s.color;
+                ctx.globalAlpha = alpha;
+                ctx.fill();
             });
+            ctx.globalAlpha = 1;
         }
 
-        container.appendChild(fragment);
+        // === ANIMATION LOOP ===
+        function animate(time) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawStars(time);
+            animationId = requestAnimationFrame(animate);
+        }
+        animationId = requestAnimationFrame(animate);
 
-        // Phase 1: Show scattered particles with staggered fade-in
-        requestAnimationFrame(() => {
-            particles.forEach((p, i) => {
-                setTimeout(() => {
-                    p.el.style.transform = 'translate(' + p.scatterX + 'px, ' + p.scatterY + 'px) rotate(' + p.rotation + 'deg)';
-                    p.el.classList.add('scattered');
-                }, 50 + i * 12);
-            });
+        // === NEBULA BLOBS ===
+        const nebulaColors = [
+            'rgba(100, 60, 180, 0.35)',
+            'rgba(40, 80, 180, 0.25)',
+            'rgba(180, 60, 120, 0.2)',
+        ];
+        nebulaColors.forEach((color, i) => {
+            const blob = document.createElement('div');
+            blob.classList.add('nebula-blob');
+            blob.style.width = (150 + Math.random() * 200) + 'px';
+            blob.style.height = blob.style.width;
+            blob.style.background = color;
+            blob.style.left = (15 + i * 30 + Math.random() * 10) + '%';
+            blob.style.top = (20 + Math.random() * 50) + '%';
+            blob.style.animationDelay = (i * 0.8) + 's';
+            loadingScreen.appendChild(blob);
         });
 
-        // Phase 2: Float particles upward slightly (1.5s)
-        setTimeout(() => {
-            particles.forEach(p => {
-                const driftX = p.scatterX + (-40 + Math.random() * 80);
-                const driftY = p.scatterY - (20 + Math.random() * 60);
-                p.el.style.transform = 'translate(' + driftX + 'px, ' + driftY + 'px) rotate(' + (p.rotation * 0.5) + 'deg)';
-            });
-        }, 1500);
 
-        // Phase 3: Form the heart shape (3s)
-        setTimeout(() => {
-            particles.forEach((p, i) => {
-                const staggerDelay = (i / PARTICLE_COUNT) * 1000;
-                p.el.style.transitionDuration = '2.5s';
-                p.el.style.transitionDelay = staggerDelay + 'ms';
+        // === PROGRESS BAR (5.5 seconds) ===
+        const LOAD_DURATION = 5500;
+        const startTime = Date.now();
+        const progressInterval = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min((elapsed / LOAD_DURATION) * 100, 100);
+            if (loadingBarFill) {
+                loadingBarFill.style.width = progress + '%';
+            }
+            if (progress >= 100) {
+                clearInterval(progressInterval);
+            }
+        }, 50);
 
-                setTimeout(() => {
-                    p.el.style.transform = 'translate(' + p.heartX + 'px, ' + p.heartY + 'px) rotate(0deg) scale(1)';
-                    p.el.classList.remove('scattered');
-                    p.el.classList.add('formed');
-                }, 30);
-            });
-        }, 3000);
-
-        // Phase 4: Add glow pulse & sparkles after heart is formed (6.5s)
-        setTimeout(() => {
-            particles.forEach((p, i) => {
-                p.el.classList.add('glow-pulse');
-            });
-
-            buatSparkles(container, heartPoints, centerX, centerY);
-            if (tapText) tapText.classList.add('show');
-        }, 6500);
-
-        // Click/tap to dismiss with planet transition
+        // === SHOW TAP TEXT AFTER LOADING ===
         let bisaDismiss = false;
-        setTimeout(() => { bisaDismiss = true; }, 6000);
+        setTimeout(() => {
+            bisaDismiss = true;
+            if (tapText) tapText.classList.add('show');
+        }, LOAD_DURATION);
+
+        // === CLICK TO DISMISS ===
         loadingScreen.addEventListener('click', function () {
             if (!bisaDismiss) return;
             bisaDismiss = false;
 
             if (tapText) tapText.classList.remove('show');
 
-            // Phase A: SUCK particles into the center
-            particles.forEach((p) => {
-                p.el.style.transitionDuration = '0.8s';
-                p.el.style.transitionDelay = (Math.random() * 150) + 'ms';
-                p.el.style.transitionTimingFunction = 'cubic-bezier(0.5, 0, 1, 0.5)';
-                p.el.style.transform = 'translate(0px, 0px) scale(0) rotate(180deg)';
-                p.el.style.opacity = '0';
-            });
+            // Fade out loading screen
+            loadingScreen.style.transition = 'opacity 1s ease';
+            loadingScreen.style.opacity = '0';
 
-            // Phase B: Fade out screen
             setTimeout(() => {
-                loadingScreen.style.transition = 'opacity 1s ease';
-                loadingScreen.style.opacity = '0';
-            }, 800);
-
-            // Phase C: Show PIN screen instead of landing page
-            setTimeout(() => {
+                cancelAnimationFrame(animationId);
                 loadingScreen.style.display = 'none';
+
+                // Show PIN screen
                 const pinScreen = document.getElementById('pin-screen');
                 if (pinScreen) {
                     pinScreen.style.display = 'flex';
-                    // Delay sedikit agar transisi CSS jalan
                     setTimeout(() => {
                         pinScreen.classList.add('active');
                     }, 50);
                 }
-            }, 1800);
+            }, 1000);
         });
 
         // ==========================================
@@ -175,7 +134,7 @@
         const pinPopupClose = document.getElementById('pin-popup-close');
 
         // DEFAULT PIN: Silakan ubah angka ini jika ingin PIN lain
-        const SECRET_PIN = "0207";
+        const SECRET_PIN = "2908";
 
         let pinAttempt = 0;
         let popupTimeout = null;
@@ -287,8 +246,8 @@
                         if (pinInput.value === SECRET_PIN) {
                             // PIN BENAR
                             showPinPopup({
-                                message: 'Valid!\nLanjut ya sayang~',
-                                buttonText: 'Lanjut 💕'
+                                message: 'Valid!\nLanjut yaa~',
+                                buttonText: 'Lanjut'
                             }, true);
 
                             // Auto-close dan lanjut setelah 2 detik
@@ -339,27 +298,6 @@
         }
     }
 
-    function buatSparkles(container, heartPoints, centerX, centerY) {
-        const sparkleInterval = setInterval(() => {
-            const sparkle = document.createElement('div');
-            sparkle.classList.add('heart-sparkle');
-
-            const randomPoint = heartPoints[Math.floor(Math.random() * heartPoints.length)];
-            const offsetX = -15 + Math.random() * 30;
-            const offsetY = -15 + Math.random() * 30;
-
-            sparkle.style.left = (centerX + randomPoint.x + offsetX) + 'px';
-            sparkle.style.top = (centerY + randomPoint.y + offsetY) + 'px';
-            sparkle.style.animation = 'sparkleFloat ' + (1.5 + Math.random() * 1.5) + 's ease-out forwards';
-
-            container.appendChild(sparkle);
-            setTimeout(() => sparkle.remove(), 3000);
-        }, 400);
-
-        document.getElementById('love-loading-screen').addEventListener('click', () => {
-            clearInterval(sparkleInterval);
-        }, { once: true });
-    }
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', mulaiAnimasiLoading);
@@ -563,6 +501,7 @@ function ketikTeks(elemen, teks) {
     return new Promise(resolve => {
         let index = 0;
         elemen.innerHTML = '';
+        elemen.classList.add('typing-active');
 
         function ketik() {
             if (index < teks.length) {
@@ -570,6 +509,7 @@ function ketikTeks(elemen, teks) {
                 index++;
                 setTimeout(ketik, 35);
             } else {
+                elemen.classList.remove('typing-active');
                 elemen.classList.add('typing-done');
                 resolve();
             }
