@@ -134,7 +134,7 @@
         const pinPopupClose = document.getElementById('pin-popup-close');
 
         // DEFAULT PIN: Silakan ubah angka ini jika ingin PIN lain
-        const SECRET_PIN = "2908";
+        const SECRET_PIN = "1111";
 
         let pinAttempt = 0;
         let popupTimeout = null;
@@ -246,7 +246,7 @@
                         if (pinInput.value === SECRET_PIN) {
                             // PIN BENAR
                             showPinPopup({
-                                message: 'Valid!\nLanjut yaa~',
+                                message: 'Valid!\nLanjut yaa sayang~',
                                 buttonText: 'Lanjut'
                             }, true);
 
@@ -310,7 +310,7 @@
 // 1. FUNGSI FOTO MEMBESAR (LIGHTBOX) & PEMUTAR MUSIK
 // ==========================================
 document.addEventListener("DOMContentLoaded", function () {
-    const daftarFoto = document.querySelectorAll('.gallery-scroll img, .polaroid, .planet-card');
+    const daftarFoto = document.querySelectorAll('.gallery-scroll img, .gallery-scroll video, .polaroid, .planet-card');
     const modal = document.getElementById('image-modal');
     const modalImg = document.getElementById('modal-img');
     const modalIframe = document.getElementById('modal-iframe'); // Panggil elemen iframe
@@ -321,10 +321,12 @@ document.addEventListener("DOMContentLoaded", function () {
             foto.addEventListener('click', function () {
 
                 // Reset layar setiap kali diklik
+                const modalVideo = document.getElementById('modal-video');
                 if (modalCaption) modalCaption.innerHTML = "";
                 modalImg.style.display = 'block'; // Tampilkan foto sebagai default
                 modalIframe.style.display = 'none'; // Sembunyikan musik sebagai default
                 modalIframe.src = ""; // Kosongkan lagu sebelumnya
+                if (modalVideo) { modalVideo.style.display = 'none'; modalVideo.pause(); modalVideo.src = ''; }
 
                 // A. JIKA YANG DIKLIK ADALAH KARTU LAGU/VIDEO (Punya data-embed)
                 if (this.classList.contains('planet-card') && this.hasAttribute('data-embed')) {
@@ -364,7 +366,16 @@ document.addEventListener("DOMContentLoaded", function () {
                     modalImg.src = this.querySelector('img').src;
                     modalImg.style.aspectRatio = "1 / 1";
                 }
-                // D. JIKA YANG DIKLIK ADALAH GALERI CINTA
+                // D. JIKA YANG DIKLIK ADALAH VIDEO DI GALERI
+                else if (this.tagName === 'VIDEO') {
+                    modalImg.style.display = 'none';
+                    if (modalVideo) {
+                        modalVideo.src = this.src;
+                        modalVideo.style.display = 'block';
+                        modalVideo.play().catch(() => {});
+                    }
+                }
+                // E. JIKA YANG DIKLIK ADALAH GALERI CINTA (FOTO)
                 else {
                     modalImg.src = this.src;
                     modalImg.style.aspectRatio = "9 / 16";
@@ -386,12 +397,19 @@ document.addEventListener("DOMContentLoaded", function () {
 function tutupModal() {
     const modal = document.getElementById('image-modal');
     const modalIframe = document.getElementById('modal-iframe');
+    const modalVideo = document.getElementById('modal-video');
 
     if (modal) {
         modal.classList.remove('show-modal');
         // KUNCI PENTING: Mengosongkan src agar lagu berhenti berputar saat ditutup
         if (modalIframe) {
             modalIframe.src = "";
+        }
+        // Hentikan video saat modal ditutup
+        if (modalVideo) {
+            modalVideo.pause();
+            modalVideo.src = '';
+            modalVideo.style.display = 'none';
         }
     }
 }
@@ -667,6 +685,14 @@ document.addEventListener('DOMContentLoaded', () => {
             canvas.style.opacity = '0';
             setTimeout(() => {
                 canvas.style.pointerEvents = 'none';
+                // Auto-play video jika scratch card berisi video
+                const parentCard = canvas.closest('.scratch-card');
+                if (parentCard) {
+                    const video = parentCard.querySelector('video');
+                    if (video) {
+                        video.play().catch(() => {});
+                    }
+                }
             }, 500);
 
             // Update hint
